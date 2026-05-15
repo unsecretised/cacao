@@ -20,5 +20,9 @@ pub trait AppDelegate {
     /// through to your shared application, then used the `App::shared()` call.
     fn did_finish_launching(&self) {}
 
-    fn config_for_scene_session(&self, session: SceneSession, options: SceneConnectionOptions) -> SceneConfig;
+    fn config_for_scene_session(
+        &self,
+        session: SceneSession,
+        options: SceneConnectionOptions,
+    ) -> SceneConfig;
 }

@@ -44,7 +44,7 @@ use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
 use crate::appkit::menu::Menu;
-use crate::foundation::{id, nil, AutoReleasePool, NSInteger, NSUInteger, NO, YES};
+use crate::foundation::{AutoReleasePool, NO, NSInteger, NSUInteger, YES, id, nil};
 use crate::invoker::TargetActionHandler;
 use crate::notification_center::Dispatcher;
 use crate::utils::activate_cocoa_multithreading;
@@ -100,7 +100,7 @@ pub struct App<T = (), M = ()> {
     /// The main-thread AutoReleasePool. Drains on app exit.
     pub pool: AutoReleasePool,
 
-    _message: std::marker::PhantomData<M>
+    _message: std::marker::PhantomData<M>,
 }
 
 impl<T, M> fmt::Debug for App<T, M> {
@@ -132,7 +132,7 @@ impl<T> App<T> {
 
 impl<T> App<T>
 where
-    T: AppDelegate + 'static
+    T: AppDelegate + 'static,
 {
     /// Creates an NSAutoReleasePool, configures various NSApplication properties (e.g, activation
     /// policies), injects an `NSObject` delegate wrapper, and retains everything on the
@@ -162,7 +162,7 @@ where
             objc_delegate,
             delegate: app_delegate,
             pool,
-            _message: std::marker::PhantomData
+            _message: std::marker::PhantomData,
         }
     }
 }
@@ -185,7 +185,7 @@ where
 impl<T, M> App<T, M>
 where
     M: Send + Sync + 'static,
-    T: AppDelegate + Dispatcher<Message = M>
+    T: AppDelegate + Dispatcher<Message = M>,
 {
     /// Dispatches a message by grabbing the `sharedApplication`, getting ahold of the delegate,
     /// and passing back through there.
@@ -331,7 +331,7 @@ impl App {
     /// begin_sheet, a WindowDelegate is required.
     pub fn run_modal_for_window<W>(window: &Window<W>) -> ModalResponse
     where
-        W: WindowDelegate + 'static
+        W: WindowDelegate + 'static,
     {
         shared_application(|app| unsafe {
             let modal_response: NSInteger = msg_send![app, runModalForWindow: &*window.objc];

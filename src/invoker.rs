@@ -46,7 +46,7 @@ impl fmt::Debug for Action {
 #[derive(Debug)]
 pub struct TargetActionHandler {
     action: Box<Action>,
-    invoker: Id<Object, Shared>
+    invoker: Id<Object, Shared>,
 }
 
 impl TargetActionHandler {
@@ -66,7 +66,7 @@ impl TargetActionHandler {
 
         TargetActionHandler {
             invoker,
-            action: unsafe { Box::from_raw(ptr) }
+            action: unsafe { Box::from_raw(ptr) },
         }
     }
 }

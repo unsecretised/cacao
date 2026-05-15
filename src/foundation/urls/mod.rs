@@ -7,7 +7,7 @@ use objc::rc::{Id, Shared};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, nil, NSData, NSString, NSUInteger};
+use crate::foundation::{NSData, NSString, NSUInteger, id, nil};
 
 mod bookmark_options;
 pub use bookmark_options::{NSURLBookmarkCreationOption, NSURLBookmarkResolutionOption};
@@ -32,7 +32,7 @@ pub use resource_keys::{NSURLFileResource, NSURLResourceKey, NSUbiquitousItemDow
 pub struct NSURL<'a> {
     /// A reference to the backing `NSURL`.
     pub objc: Id<Object, Shared>,
-    phantom: PhantomData<&'a ()>
+    phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> NSURL<'a> {
@@ -41,7 +41,7 @@ impl<'a> NSURL<'a> {
     pub fn retain(object: id) -> Self {
         NSURL {
             objc: unsafe { Id::retain(object).unwrap() },
-            phantom: PhantomData
+            phantom: PhantomData,
         }
     }
 
@@ -52,7 +52,7 @@ impl<'a> NSURL<'a> {
         Self {
             objc: unsafe { msg_send_id![class!(NSURL), URLWithString:&*url] },
 
-            phantom: PhantomData
+            phantom: PhantomData,
         }
     }
 
@@ -82,8 +82,8 @@ impl<'a> NSURL<'a> {
     pub fn bookmark_data(
         &self,
         options: &[NSURLBookmarkCreationOption],
-        resource_value_keys: &[NSURLResourceKey],
-        relative_to_url: Option<NSURL>
+        _resource_value_keys: &[NSURLResourceKey],
+        relative_to_url: Option<NSURL>,
     ) -> Result<NSData, Box<dyn Error>> {
         let mut opts: NSUInteger = 0;
         for mask in options {
@@ -114,7 +114,7 @@ impl<'a> NSURL<'a> {
                     relativeToURL: nil,
                     error: nil,
                 ]
-            }
+            },
         });
 
         // Check for errors...
@@ -125,10 +125,10 @@ impl<'a> NSURL<'a> {
 
     /// Converts bookmark data into a URL.
     pub fn from_bookmark_data(
-        data: NSData,
-        options: &[NSURLBookmarkResolutionOption],
-        relative_to_url: Option<NSURL>,
-        data_is_stale: bool
+        _data: NSData,
+        _options: &[NSURLBookmarkResolutionOption],
+        _relative_to_url: Option<NSURL>,
+        _data_is_stale: bool,
     ) -> Result<Self, Box<dyn Error>> {
         Err("LOL".into())
     }

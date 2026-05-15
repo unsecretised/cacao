@@ -8,12 +8,12 @@ use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
 use crate::color::Color;
-use crate::foundation::{id, to_bool, NSString, BOOL, NO, YES};
+use crate::foundation::{BOOL, NO, NSString, YES, id, to_bool};
 use crate::utils::CFRange;
 
 use super::Font;
 
-extern "C" {
+unsafe extern "C" {
     static NSForegroundColorAttributeName: id;
     static NSFontAttributeName: id;
 }
@@ -84,7 +84,9 @@ impl fmt::Debug for AttributedString {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let string = NSString::from_id(unsafe { msg_send_id![&*self.0, string] });
 
-        f.debug_struct("AttributedString").field("text", &string.to_str()).finish()
+        f.debug_struct("AttributedString")
+            .field("text", &string.to_str())
+            .finish()
     }
 }
 

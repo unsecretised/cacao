@@ -2,7 +2,7 @@
 
 use objc::rc::Id;
 
-use crate::foundation::{id, NSString, NSUInteger};
+use crate::foundation::{NSString, NSUInteger, id};
 
 /// Represents the display mode(s) a Toolbar can render in.
 #[derive(Clone, Copy, Debug)]
@@ -17,7 +17,7 @@ pub enum ToolbarDisplayMode {
     IconOnly,
 
     /// Show label only.
-    LabelOnly
+    LabelOnly,
 }
 
 impl From<ToolbarDisplayMode> for NSUInteger {
@@ -26,7 +26,7 @@ impl From<ToolbarDisplayMode> for NSUInteger {
             ToolbarDisplayMode::Default => 0,
             ToolbarDisplayMode::IconAndLabel => 1,
             ToolbarDisplayMode::IconOnly => 2,
-            ToolbarDisplayMode::LabelOnly => 3
+            ToolbarDisplayMode::LabelOnly => 3,
         }
     }
 }
@@ -79,10 +79,10 @@ pub enum ItemIdentifier {
     /// Note that this API was introduced in Big Sur (11.0), and you may need to check against this
     /// at runtime to ensure behavior is appropriate on older OS versions (if you support them).
     ///
-    SidebarTracker
+    SidebarTracker,
 }
 
-extern "C" {
+unsafe extern "C" {
     static NSToolbarToggleSidebarItemIdentifier: id;
     static NSToolbarCloudSharingItemIdentifier: id;
     static NSToolbarFlexibleSpaceItemIdentifier: id;
@@ -110,9 +110,9 @@ impl ItemIdentifier {
                 // This ensures that the framework compiles and runs on 10.15.7 and lower; it will
                 // not actually work on anything except 11.0+. Use a runtime check to be safe.
                 // FIXME: We shouldn't use autorelease here
-                Self::SidebarTracker => {
-                    Id::autorelease_return(NSString::no_copy("NSToolbarSidebarTrackingSeparatorItemIdentifier").objc)
-                },
+                Self::SidebarTracker => Id::autorelease_return(
+                    NSString::no_copy("NSToolbarSidebarTrackingSeparatorItemIdentifier").objc,
+                ),
             }
         }
     }
@@ -128,7 +128,7 @@ pub enum ToolbarSizeMode {
     Regular,
 
     /// The small size mode.
-    Small
+    Small,
 }
 
 impl From<ToolbarSizeMode> for NSUInteger {
@@ -136,7 +136,7 @@ impl From<ToolbarSizeMode> for NSUInteger {
         match mode {
             ToolbarSizeMode::Default => 0,
             ToolbarSizeMode::Regular => 1,
-            ToolbarSizeMode::Small => 2
+            ToolbarSizeMode::Small => 2,
         }
     }
 }

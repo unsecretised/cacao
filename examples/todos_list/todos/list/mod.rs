@@ -2,9 +2,11 @@
 //! mostly single-threaded example, so we can get away with cutting a few corners and keeping our
 //! data store in here - but for a larger app, you'd likely do something else.
 
-use cacao::listview::{ListView, ListViewDelegate, ListViewRow, RowAction, RowActionStyle, RowAnimation, RowEdge};
+use cacao::listview::{
+    ListView, ListViewDelegate, ListViewRow, RowAction, RowActionStyle, RowAnimation, RowEdge,
+};
 
-use crate::storage::{dispatch_ui, Message, TodoStatus, Todos};
+use crate::storage::{Message, TodoStatus, Todos, dispatch_ui};
 
 mod row;
 use row::TodoViewRow;
@@ -16,7 +18,7 @@ const TODO_ROW: &str = "TodoViewRowCell";
 #[derive(Debug, Default)]
 pub struct TodosListView {
     view: Option<ListView>,
-    todos: Todos
+    todos: Todos,
 }
 
 impl TodosListView {
@@ -24,30 +26,35 @@ impl TodosListView {
     pub fn on_message(&self, message: Message) {
         match message {
             Message::MarkTodoComplete(row) => {
-                self.todos.with_mut(row, |todo| todo.status = TodoStatus::Complete);
+                self.todos
+                    .with_mut(row, |todo| todo.status = TodoStatus::Complete);
                 if let Some(view) = &self.view {
                     view.reload_rows(&[row]);
                     view.set_row_actions_visible(false);
                 }
-            },
+            }
 
             Message::MarkTodoIncomplete(row) => {
-                self.todos.with_mut(row, |todo| todo.status = TodoStatus::Incomplete);
+                self.todos
+                    .with_mut(row, |todo| todo.status = TodoStatus::Incomplete);
 
                 if let Some(view) = &self.view {
                     view.reload_rows(&[row]);
                     view.set_row_actions_visible(false);
                 }
-            },
+            }
 
             Message::StoreNewTodo(todo) => {
                 self.todos.insert(todo);
-                self.view.as_ref().unwrap().perform_batch_updates(|listview| {
-                    // We know we always insert at the 0 index, so this is a simple calculation.
-                    // You'd need to diff yourself for anything more complicated.
-                    listview.insert_rows(&[0], RowAnimation::SlideDown);
-                });
-            },
+                self.view
+                    .as_ref()
+                    .unwrap()
+                    .perform_batch_updates(|listview| {
+                        // We know we always insert at the 0 index, so this is a simple calculation.
+                        // You'd need to diff yourself for anything more complicated.
+                        listview.insert_rows(&[0], RowAnimation::SlideDown);
+                    });
+            }
 
             _ => {}
         }
@@ -99,9 +106,9 @@ impl ListViewDelegate for TodosListView {
                     RowActionStyle::Destructive,
                     move |_action, row| {
                         dispatch_ui(Message::MarkTodoIncomplete(row));
-                    }
+                    },
                 ));
-            },
+            }
 
             TodoStatus::Incomplete => {
                 actions.push(RowAction::new(
@@ -109,7 +116,7 @@ impl ListViewDelegate for TodosListView {
                     RowActionStyle::Regular,
                     move |_action, row| {
                         dispatch_ui(Message::MarkTodoComplete(row));
-                    }
+                    },
                 ));
             }
         });

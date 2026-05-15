@@ -13,13 +13,13 @@ use cacao::view::{View, ViewDelegate};
 use cacao::button::Button;
 use cacao::input::TextField;
 
-use crate::storage::{dispatch_ui, Message};
+use crate::storage::{Message, dispatch_ui};
 
 #[derive(Debug, Default)]
 pub struct AddNewTodoContentView {
     pub view: Option<View>,
     pub input: Option<TextField>,
-    pub button: Option<Button>
+    pub button: Option<Button>,
 }
 
 impl AddNewTodoContentView {
@@ -32,7 +32,7 @@ impl AddNewTodoContentView {
                         dispatch_ui(Message::StoreNewTodo(task));
                     }
                 }
-            },
+            }
 
             _ => {}
         }
@@ -58,14 +58,29 @@ impl ViewDelegate for AddNewTodoContentView {
 
         LayoutConstraint::activate(&[
             instructions.top.constraint_equal_to(&view.top).offset(16.),
-            instructions.leading.constraint_equal_to(&view.leading).offset(16.),
-            instructions.trailing.constraint_equal_to(&view.trailing).offset(-16.),
-            input.top.constraint_equal_to(&instructions.bottom).offset(8.),
+            instructions
+                .leading
+                .constraint_equal_to(&view.leading)
+                .offset(16.),
+            instructions
+                .trailing
+                .constraint_equal_to(&view.trailing)
+                .offset(-16.),
+            input
+                .top
+                .constraint_equal_to(&instructions.bottom)
+                .offset(8.),
             input.leading.constraint_equal_to(&view.leading).offset(16.),
-            input.trailing.constraint_equal_to(&view.trailing).offset(-16.),
+            input
+                .trailing
+                .constraint_equal_to(&view.trailing)
+                .offset(-16.),
             button.top.constraint_equal_to(&input.bottom).offset(8.),
-            button.trailing.constraint_equal_to(&view.trailing).offset(-16.),
-            button.bottom.constraint_equal_to(&view.bottom).offset(-16.)
+            button
+                .trailing
+                .constraint_equal_to(&view.trailing)
+                .offset(-16.),
+            button.bottom.constraint_equal_to(&view.bottom).offset(-16.),
         ]);
 
         self.view = Some(view);

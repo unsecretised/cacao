@@ -13,8 +13,8 @@ use objc::declare::ClassDecl;
 use objc::runtime::{Bool, Class, Object, Sel};
 use objc::{class, sel};
 
-use crate::foundation::{id, NSUInteger};
-use crate::scrollview::{ScrollViewDelegate, SCROLLVIEW_DELEGATE_PTR};
+use crate::foundation::{NSUInteger, id};
+use crate::scrollview::{SCROLLVIEW_DELEGATE_PTR, ScrollViewDelegate};
 use crate::utils::load;
 
 /// Enforces normalcy, or: a needlessly cruel method in terms of the name. You get the idea though.
@@ -98,7 +98,10 @@ pub(crate) fn register_scrollview_class_with_delegate<T: ScrollViewDelegate>() -
         // move.
         decl.add_ivar::<usize>(SCROLLVIEW_DELEGATE_PTR);
 
-        decl.add_method(sel!(isFlipped), enforce_normalcy as extern "C" fn(_, _) -> _);
+        decl.add_method(
+            sel!(isFlipped),
+            enforce_normalcy as extern "C" fn(_, _) -> _,
+        );
 
         /*
         // Drag and drop operations (e.g, accepting files)

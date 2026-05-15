@@ -32,7 +32,7 @@ mod appkit_dynamic_color;
 #[cfg(feature = "appkit")]
 use appkit_dynamic_color::{
     AQUA_DARK_COLOR_HIGH_CONTRAST, AQUA_DARK_COLOR_NORMAL_CONTRAST, AQUA_LIGHT_COLOR_HIGH_CONTRAST,
-    AQUA_LIGHT_COLOR_NORMAL_CONTRAST
+    AQUA_LIGHT_COLOR_NORMAL_CONTRAST,
 };
 
 /// Represents a rendering style - dark mode or light mode.
@@ -46,7 +46,7 @@ pub enum Theme {
     Light,
 
     /// Dark mode.
-    Dark
+    Dark,
 }
 
 /// Represents the contrast level for a rendering context.
@@ -56,7 +56,7 @@ pub enum Contrast {
     Normal,
 
     /// The high contrast level for the system.
-    High
+    High,
 }
 
 /// A `Style` is passed to you when doing dynamic color calculations. You can opt to
@@ -68,7 +68,7 @@ pub struct Style {
     pub theme: Theme,
 
     /// Represents the current contrast level for where this color may render.
-    pub contrast: Contrast
+    pub contrast: Contrast,
 }
 
 /// Represents a Color. You can create custom colors using the various
@@ -236,7 +236,7 @@ pub enum Color {
 
     /// The background color that should appear under a page per the system theme.
     #[cfg(feature = "appkit")]
-    MacOSUnderPageBackgroundColor
+    MacOSUnderPageBackgroundColor,
 }
 
 impl Color {
@@ -248,9 +248,12 @@ impl Color {
         let b = blue as CGFloat / 255.0;
         let a = alpha as CGFloat / 255.0;
         #[cfg(feature = "appkit")]
-        let ptr = unsafe { msg_send_id![class!(NSColor), colorWithCalibratedRed: r, green: g, blue: b, alpha: a] };
+        let ptr = unsafe {
+            msg_send_id![class!(NSColor), colorWithCalibratedRed: r, green: g, blue: b, alpha: a]
+        };
         #[cfg(all(feature = "uikit", not(feature = "appkit")))]
-        let ptr = unsafe { msg_send_id![class!(UIColor), colorWithRed: r, green: g, blue: b, alpha: a] };
+        let ptr =
+            unsafe { msg_send_id![class!(UIColor), colorWithRed: r, green: g, blue: b, alpha: a] };
 
         Color::Custom(Arc::new(RwLock::new(ptr)))
     }
@@ -344,7 +347,7 @@ impl Color {
     #[cfg(feature = "appkit")]
     pub fn dynamic<F>(handler: F) -> Self
     where
-        F: Fn(Style) -> Color + 'static
+        F: Fn(Style) -> Color + 'static,
     {
         // It's *possible* that we shouldn't cache these up-front and let them be truly dynamically
         // allocated, but this is fine for now (and more predictable, even if perhaps wrong). I'm
@@ -352,33 +355,34 @@ impl Color {
         // am happy to do this for now and let someone who needs true dynamic allocation look into
         // it and PR it.
         Color::Custom(Arc::new(RwLock::new(unsafe {
-            let mut color: Id<Object, Owned> = msg_send_id![appkit_dynamic_color::register_class(), new];
+            let mut color: Id<Object, Owned> =
+                msg_send_id![appkit_dynamic_color::register_class(), new];
 
             color.set_ivar(AQUA_LIGHT_COLOR_NORMAL_CONTRAST, {
                 to_objc(&handler(Style {
                     theme: Theme::Light,
-                    contrast: Contrast::Normal
+                    contrast: Contrast::Normal,
                 }))
             });
 
             color.set_ivar(AQUA_LIGHT_COLOR_HIGH_CONTRAST, {
                 to_objc(&handler(Style {
                     theme: Theme::Light,
-                    contrast: Contrast::High
+                    contrast: Contrast::High,
                 }))
             });
 
             color.set_ivar(AQUA_DARK_COLOR_NORMAL_CONTRAST, {
                 to_objc(&handler(Style {
                     theme: Theme::Dark,
-                    contrast: Contrast::Normal
+                    contrast: Contrast::Normal,
                 }))
             });
 
             color.set_ivar(AQUA_DARK_COLOR_HIGH_CONTRAST, {
                 to_objc(&handler(Style {
                     theme: Theme::Light,
-                    contrast: Contrast::Normal
+                    contrast: Contrast::Normal,
                 }))
             });
 
@@ -458,7 +462,7 @@ unsafe fn to_objc(obj: &Color) -> id {
         Color::Custom(color) => {
             let mut ptr = color.write().unwrap();
             &mut **ptr
-        },
+        }
 
         Color::SystemBlack => msg_send![color, blackColor],
         Color::SystemWhite => msg_send![color, whiteColor],
@@ -480,30 +484,54 @@ unsafe fn to_objc(obj: &Color) -> id {
         Color::SystemGray6 => system_color_with_fallback!(color, systemGray6Color, lightGrayColor),
         Color::Clear => msg_send![color, clearColor],
         Color::Label => system_color_with_fallback!(color, labelColor, blackColor),
-        Color::LabelSecondary => system_color_with_fallback!(color, secondaryLabelColor, blackColor),
+        Color::LabelSecondary => {
+            system_color_with_fallback!(color, secondaryLabelColor, blackColor)
+        }
         Color::LabelTertiary => system_color_with_fallback!(color, tertiaryLabelColor, blackColor),
-        Color::LabelQuaternary => system_color_with_fallback!(color, quaternaryLabelColor, blackColor),
+        Color::LabelQuaternary => {
+            system_color_with_fallback!(color, quaternaryLabelColor, blackColor)
+        }
         Color::SystemFill => system_color_with_fallback!(color, systemFillColor, clearColor),
-        Color::SystemFillSecondary => system_color_with_fallback!(color, secondarySystemFillColor, clearColor),
-        Color::SystemFillTertiary => system_color_with_fallback!(color, tertiarySystemFillColor, clearColor),
-        Color::SystemFillQuaternary => system_color_with_fallback!(color, quaternarySystemFillColor, clearColor),
-        Color::PlaceholderText => system_color_with_fallback!(color, placeholderTextColor, darkGrayColor),
-        Color::SystemBackground => system_color_with_fallback!(color, systemBackgroundColor, clearColor),
-        Color::SystemBackgroundSecondary => system_color_with_fallback!(color, secondarySystemBackgroundColor, clearColor),
-        Color::SystemBackgroundTertiary => system_color_with_fallback!(color, tertiarySystemBackgroundColor, clearColor),
+        Color::SystemFillSecondary => {
+            system_color_with_fallback!(color, secondarySystemFillColor, clearColor)
+        }
+        Color::SystemFillTertiary => {
+            system_color_with_fallback!(color, tertiarySystemFillColor, clearColor)
+        }
+        Color::SystemFillQuaternary => {
+            system_color_with_fallback!(color, quaternarySystemFillColor, clearColor)
+        }
+        Color::PlaceholderText => {
+            system_color_with_fallback!(color, placeholderTextColor, darkGrayColor)
+        }
+        Color::SystemBackground => {
+            system_color_with_fallback!(color, systemBackgroundColor, clearColor)
+        }
+        Color::SystemBackgroundSecondary => {
+            system_color_with_fallback!(color, secondarySystemBackgroundColor, clearColor)
+        }
+        Color::SystemBackgroundTertiary => {
+            system_color_with_fallback!(color, tertiarySystemBackgroundColor, clearColor)
+        }
         Color::Separator => system_color_with_fallback!(color, separatorColor, lightGrayColor),
 
         #[cfg(feature = "uikit")]
-        Color::OpaqueSeparator => system_color_with_fallback!(color, opaqueSeparatorColor, darkGrayColor),
+        Color::OpaqueSeparator => {
+            system_color_with_fallback!(color, opaqueSeparatorColor, darkGrayColor)
+        }
 
         Color::Link => system_color_with_fallback!(color, linkColor, blueColor),
         Color::DarkText => system_color_with_fallback!(color, darkTextColor, blackColor),
         Color::LightText => system_color_with_fallback!(color, lightTextColor, whiteColor),
 
         #[cfg(feature = "appkit")]
-        Color::MacOSWindowBackgroundColor => system_color_with_fallback!(color, windowBackgroundColor, clearColor),
+        Color::MacOSWindowBackgroundColor => {
+            system_color_with_fallback!(color, windowBackgroundColor, clearColor)
+        }
 
         #[cfg(feature = "appkit")]
-        Color::MacOSUnderPageBackgroundColor => system_color_with_fallback!(color, underPageBackgroundColor, clearColor)
+        Color::MacOSUnderPageBackgroundColor => {
+            system_color_with_fallback!(color, underPageBackgroundColor, clearColor)
+        }
     }
 }

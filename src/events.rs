@@ -31,7 +31,7 @@ pub enum EventModifierFlag {
     Function,
 
     /// Device independent flags mask.
-    DeviceIndependentFlagsMask
+    DeviceIndependentFlagsMask,
 }
 
 impl From<EventModifierFlag> for NSUInteger {
@@ -45,7 +45,7 @@ impl From<EventModifierFlag> for NSUInteger {
             EventModifierFlag::Numpad => 1 << 21,
             EventModifierFlag::Help => 1 << 22,
             EventModifierFlag::Function => 1 << 23,
-            EventModifierFlag::DeviceIndependentFlagsMask => 0xffff0000
+            EventModifierFlag::DeviceIndependentFlagsMask => 0xffff0000,
         }
     }
 }
@@ -61,7 +61,7 @@ impl From<&EventModifierFlag> for NSUInteger {
             EventModifierFlag::Numpad => 1 << 21,
             EventModifierFlag::Help => 1 << 22,
             EventModifierFlag::Function => 1 << 23,
-            EventModifierFlag::DeviceIndependentFlagsMask => 0xffff0000
+            EventModifierFlag::DeviceIndependentFlagsMask => 0xffff0000,
         }
     }
 }
@@ -108,5 +108,5 @@ pub enum EventType {
     Pressure = 34,
     DirectTouch = 37,
 
-    ChangeMode = 38
+    ChangeMode = 38,
 }

@@ -5,13 +5,13 @@ use std::error::Error;
 use std::sync::{Arc, RwLock};
 
 use objc::rc::{Id, Owned};
-use objc::runtime::{Object, BOOL};
+use objc::runtime::{BOOL, Object};
 use objc::{class, msg_send, msg_send_id, sel};
 use url::Url;
 
 use crate::error::Error as AppKitError;
 use crate::filesystem::enums::{SearchPathDirectory, SearchPathDomainMask};
-use crate::foundation::{id, nil, NSString, NSUInteger, NO};
+use crate::foundation::{NO, NSString, NSUInteger, id, nil};
 
 /// A FileManager can be used for file operations (moving files, etc).
 ///
@@ -35,13 +35,19 @@ impl Default for FileManager {
 impl FileManager {
     /// Returns a new FileManager that opts in to delegate methods.
     pub fn new() -> Self {
-        FileManager(Arc::new(RwLock::new(unsafe { msg_send_id![class!(NSFileManager), new] })))
+        FileManager(Arc::new(RwLock::new(unsafe {
+            msg_send_id![class!(NSFileManager), new]
+        })))
     }
 
     /// Given a directory/domain combination, will attempt to get the directory that matches.
     /// Returns a PathBuf that wraps the given location. If there's an error on the Objective-C
     /// side, we attempt to catch it and bubble it up.
-    pub fn get_directory(&self, directory: SearchPathDirectory, in_domain: SearchPathDomainMask) -> Result<Url, Box<dyn Error>> {
+    pub fn get_directory(
+        &self,
+        directory: SearchPathDirectory,
+        in_domain: SearchPathDomainMask,
+    ) -> Result<Url, Box<dyn Error>> {
         let dir: NSUInteger = directory.into();
         let mask: NSUInteger = in_domain.into();
 
@@ -75,7 +81,8 @@ impl FileManager {
             let manager = self.0.read().unwrap();
 
             let error: id = nil;
-            let result: BOOL = msg_send![&**manager, moveItemAtURL:from_url toURL:to_url error:&error];
+            let result: BOOL =
+                msg_send![&**manager, moveItemAtURL:from_url toURL:to_url error:&error];
             if result == NO {
                 return Err(AppKitError::new(error).into());
             }

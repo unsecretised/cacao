@@ -5,7 +5,7 @@ use objc::rc::{Id, Shared};
 use objc::runtime::{Class, Object};
 use objc::{msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, load_or_register_class, nil, NSString, NO};
+use crate::foundation::{NO, NSString, id, load_or_register_class, nil};
 use crate::invoker::TargetActionHandler;
 use crate::layout::Layout;
 #[cfg(feature = "autolayout")]
@@ -59,7 +59,7 @@ pub struct Switch {
 
     /// A pointer to the Objective-C runtime center Y layout constraint.
     #[cfg(feature = "autolayout")]
-    pub center_y: LayoutAnchorY
+    pub center_y: LayoutAnchorY,
 }
 
 impl Switch {
@@ -69,7 +69,8 @@ impl Switch {
         let title = NSString::new(text);
 
         let view: id = unsafe {
-            let button: id = msg_send![register_class(), buttonWithTitle: &*title, target: nil, action: nil];
+            let button: id =
+                msg_send![register_class(), buttonWithTitle: &*title, target: nil, action: nil];
 
             #[cfg(feature = "autolayout")]
             let _: () = msg_send![button, setTranslatesAutoresizingMaskIntoConstraints: NO];
@@ -112,7 +113,7 @@ impl Switch {
             center_x: LayoutAnchorX::center(view),
 
             #[cfg(feature = "autolayout")]
-            center_y: LayoutAnchorY::center(view)
+            center_y: LayoutAnchorY::center(view),
         }
     }
 
@@ -173,5 +174,5 @@ impl Drop for Switch {
 /// Registers an `NSButton` subclass, and configures it to hold some ivars
 /// for various things we need to store.
 fn register_class() -> &'static Class {
-    load_or_register_class("NSButton", "RSTSwitch", |decl| unsafe {})
+    load_or_register_class("NSButton", "RSTSwitch", |_decl| {})
 }

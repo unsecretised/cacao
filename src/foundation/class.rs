@@ -1,6 +1,6 @@
 use std::cell::Cell;
-use std::collections::hash_map::DefaultHasher;
 use std::collections::HashMap;
+use std::collections::hash_map::DefaultHasher;
 use std::ffi::CString;
 use std::hash::{Hash, Hasher};
 use std::sync::{Arc, RwLock};
@@ -38,7 +38,7 @@ thread_local! {
 #[derive(Debug)]
 struct ClassEntry {
     pub superclass_name: Option<&'static str>,
-    pub ptr: usize
+    pub ptr: usize,
 }
 
 /// Represents a key in a `ClassMap`.
@@ -60,7 +60,10 @@ impl ClassMap {
     }
 
     /// A publicly accessible load method that just passes through our global singleton.
-    pub fn static_load(class_name: &'static str, superclass_name: Option<&'static str>) -> Option<&'static Class> {
+    pub fn static_load(
+        class_name: &'static str,
+        superclass_name: Option<&'static str>,
+    ) -> Option<&'static Class> {
         CLASSES.load(class_name, superclass_name)
     }
 
@@ -68,7 +71,11 @@ impl ClassMap {
     ///
     /// This checks our internal map first, and then calls out to the Objective-C runtime to ensure
     /// we're not missing anything.
-    pub fn load(&self, class_name: &'static str, superclass_name: Option<&'static str>) -> Option<&'static Class> {
+    pub fn load(
+        &self,
+        class_name: &'static str,
+        superclass_name: Option<&'static str>,
+    ) -> Option<&'static Class> {
         {
             let reader = self.0.read().unwrap();
             if let Some(entry) = (*reader).get(&(class_name, superclass_name)) {
@@ -96,23 +103,34 @@ impl ClassMap {
         // us. For consistency's sake, we'll add this to our store and return that.
         {
             let mut writer = self.0.write().unwrap();
-            writer.insert((class_name, superclass_name), ClassEntry {
-                superclass_name,
-                ptr: class as usize
-            });
+            writer.insert(
+                (class_name, superclass_name),
+                ClassEntry {
+                    superclass_name,
+                    ptr: class as usize,
+                },
+            );
         }
 
         Some(unsafe { class.cast::<Class>().as_ref() }.unwrap())
     }
 
     /// Store a newly created subclass type.
-    pub fn store(&self, class_name: &'static str, superclass_name: Option<&'static str>, class: *const Class) {
+    pub fn store(
+        &self,
+        class_name: &'static str,
+        superclass_name: Option<&'static str>,
+        class: *const Class,
+    ) {
         let mut writer = self.0.write().unwrap();
 
-        writer.insert((class_name, superclass_name), ClassEntry {
-            superclass_name,
-            ptr: class as usize
-        });
+        writer.insert(
+            (class_name, superclass_name),
+            ClassEntry {
+                superclass_name,
+                ptr: class as usize,
+            },
+        );
     }
 }
 
@@ -130,11 +148,20 @@ impl ClassMap {
 /// > class name - but most cases do not need this and it would be a larger change to orchestrate at
 /// > the moment.
 #[inline(always)]
-pub fn load_or_register_class<F>(superclass_name: &'static str, subclass_name: &'static str, config: F) -> &'static Class
+pub fn load_or_register_class<F>(
+    superclass_name: &'static str,
+    subclass_name: &'static str,
+    config: F,
+) -> &'static Class
 where
-    F: Fn(&mut ClassDecl) + 'static
+    F: Fn(&mut ClassDecl) + 'static,
 {
-    load_or_register_class_with_optional_generated_suffix(superclass_name, subclass_name, true, config)
+    load_or_register_class_with_optional_generated_suffix(
+        superclass_name,
+        subclass_name,
+        true,
+        config,
+    )
 }
 
 /// Attempts to load a subclass, given a `superclass_name` and subclass_name. If
@@ -155,10 +182,10 @@ pub fn load_or_register_class_with_optional_generated_suffix<F>(
     superclass_name: &'static str,
     subclass_name: &'static str,
     should_append_random_subclass_name_suffix: bool,
-    config: F
+    config: F,
 ) -> &'static Class
 where
-    F: Fn(&mut ClassDecl) + 'static
+    F: Fn(&mut ClassDecl) + 'static,
 {
     if let Some(subclass) = CLASSES.load(subclass_name, Some(superclass_name)) {
         return subclass;
@@ -186,7 +213,7 @@ where
                 })
             ),
 
-            false => format!("{}_{}", subclass_name, superclass_name)
+            false => format!("{}_{}", subclass_name, superclass_name),
         };
 
         match ClassDecl::new(&objc_subclass_name, superclass) {
@@ -196,7 +223,7 @@ where
                 let class = decl.register();
                 CLASSES.store(subclass_name, Some(superclass_name), class);
                 return class;
-            },
+            }
 
             None => {
                 panic!(

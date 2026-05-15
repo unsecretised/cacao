@@ -46,7 +46,7 @@ pub enum BezelStyle {
 
     /// Any style that's not known by this framework (e.g, if Apple
     /// introduces something new).
-    Unknown(NSUInteger)
+    Unknown(NSUInteger),
 }
 
 #[cfg(feature = "appkit")]
@@ -66,7 +66,7 @@ impl From<BezelStyle> for NSUInteger {
             BezelStyle::SmallSquare => 10,
             BezelStyle::TexturedRounded => 11,
             BezelStyle::TexturedSquare => 8,
-            BezelStyle::Unknown(i) => i
+            BezelStyle::Unknown(i) => i,
         }
     }
 }
@@ -88,7 +88,7 @@ impl From<NSUInteger> for BezelStyle {
             10 => Self::SmallSquare,
             11 => Self::TexturedRounded,
             8 => Self::TexturedSquare,
-            i => Self::Unknown(i)
+            i => Self::Unknown(i),
         }
     }
 }
@@ -105,7 +105,7 @@ pub enum ImagePosition {
     ImageOverlaps,
     ImageLeading,
     ImageTrailing,
-    Other(NSUInteger)
+    Other(NSUInteger),
 }
 
 impl From<ImagePosition> for NSUInteger {
@@ -120,7 +120,7 @@ impl From<ImagePosition> for NSUInteger {
             ImagePosition::ImageOverlaps => 6,
             ImagePosition::ImageLeading => 7,
             ImagePosition::ImageTrailing => 8,
-            ImagePosition::Other(o) => o
+            ImagePosition::Other(o) => o,
         }
     }
 }
@@ -139,7 +139,7 @@ impl From<NSUInteger> for ImagePosition {
             6 => ImageOverlaps,
             7 => ImageLeading,
             8 => ImageTrailing,
-            o => Other(o)
+            o => Other(o),
         }
     }
 }

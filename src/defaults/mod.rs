@@ -38,7 +38,9 @@ use objc::rc::{Id, Owned};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, nil, to_bool, NSData, NSMutableDictionary, NSNumber, NSString, BOOL, NO, YES};
+use crate::foundation::{
+    BOOL, NO, NSData, NSMutableDictionary, NSNumber, NSString, YES, id, nil, to_bool,
+};
 
 mod value;
 pub use value::Value;

@@ -19,7 +19,9 @@ impl HapticFeedbackPerformer {
 impl Default for HapticFeedbackPerformer {
     /// Returns the default haptic feedback performer.
     fn default() -> Self {
-        HapticFeedbackPerformer(unsafe { msg_send_id![class!(NSHapticFeedbackManager), defaultPerformer] })
+        HapticFeedbackPerformer(unsafe {
+            msg_send_id![class!(NSHapticFeedbackManager), defaultPerformer]
+        })
     }
 }
 
@@ -27,7 +29,7 @@ impl Default for HapticFeedbackPerformer {
 pub enum PerformanceTime {
     Default = 0,
     Now = 1,
-    DrawCompleted = 2
+    DrawCompleted = 2,
 }
 
 impl Default for PerformanceTime {
@@ -44,7 +46,7 @@ impl TryFrom<f64> for PerformanceTime {
             0 => Ok(Self::Default),
             1 => Ok(Self::Now),
             2 => Ok(Self::DrawCompleted),
-            _ => Err("Invalid performance time")
+            _ => Err("Invalid performance time"),
         }
     }
 }
@@ -53,7 +55,7 @@ impl TryFrom<f64> for PerformanceTime {
 pub enum FeedbackPattern {
     Generic = 0,
     Alignment = 1,
-    LevelChange = 2
+    LevelChange = 2,
 }
 
 impl Default for FeedbackPattern {
@@ -70,7 +72,7 @@ impl TryFrom<f64> for FeedbackPattern {
             0 => Ok(Self::Generic),
             1 => Ok(Self::Alignment),
             2 => Ok(Self::LevelChange),
-            _ => Err("Invalid feedback pattern")
+            _ => Err("Invalid feedback pattern"),
         }
     }
 }

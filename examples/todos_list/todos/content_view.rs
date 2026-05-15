@@ -12,13 +12,13 @@ use crate::storage::Message;
 
 #[derive(Debug)]
 pub struct TodosContentView {
-    pub todos_list_view: ListView<TodosListView>
+    pub todos_list_view: ListView<TodosListView>,
 }
 
 impl Default for TodosContentView {
     fn default() -> Self {
         TodosContentView {
-            todos_list_view: ListView::with(TodosListView::default())
+            todos_list_view: ListView::with(TodosListView::default()),
         }
     }
 }
@@ -39,9 +39,15 @@ impl ViewDelegate for TodosContentView {
 
         LayoutConstraint::activate(&[
             self.todos_list_view.top.constraint_equal_to(&view.top),
-            self.todos_list_view.leading.constraint_equal_to(&view.leading),
-            self.todos_list_view.trailing.constraint_equal_to(&view.trailing),
-            self.todos_list_view.bottom.constraint_equal_to(&view.bottom)
+            self.todos_list_view
+                .leading
+                .constraint_equal_to(&view.leading),
+            self.todos_list_view
+                .trailing
+                .constraint_equal_to(&view.trailing),
+            self.todos_list_view
+                .bottom
+                .constraint_equal_to(&view.bottom),
         ]);
     }
 }

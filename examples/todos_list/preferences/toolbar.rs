@@ -4,7 +4,7 @@
 use cacao::appkit::toolbar::{ItemIdentifier, Toolbar, ToolbarDelegate, ToolbarItem};
 use cacao::image::{Image, MacSystemIcon};
 
-use crate::storage::{dispatch_ui, Message};
+use crate::storage::{Message, dispatch_ui};
 
 #[derive(Debug)]
 pub struct PreferencesToolbar((ToolbarItem, ToolbarItem));
@@ -37,7 +37,7 @@ impl Default for PreferencesToolbar {
                 });
 
                 item
-            }
+            },
         ))
     }
 }
@@ -50,21 +50,30 @@ impl ToolbarDelegate for PreferencesToolbar {
     }
 
     fn allowed_item_identifiers(&self) -> Vec<ItemIdentifier> {
-        vec![ItemIdentifier::Custom("general"), ItemIdentifier::Custom("advanced")]
+        vec![
+            ItemIdentifier::Custom("general"),
+            ItemIdentifier::Custom("advanced"),
+        ]
     }
 
     fn default_item_identifiers(&self) -> Vec<ItemIdentifier> {
-        vec![ItemIdentifier::Custom("general"), ItemIdentifier::Custom("advanced")]
+        vec![
+            ItemIdentifier::Custom("general"),
+            ItemIdentifier::Custom("advanced"),
+        ]
     }
 
     fn selectable_item_identifiers(&self) -> Vec<ItemIdentifier> {
-        vec![ItemIdentifier::Custom("general"), ItemIdentifier::Custom("advanced")]
+        vec![
+            ItemIdentifier::Custom("general"),
+            ItemIdentifier::Custom("advanced"),
+        ]
     }
 
     fn item_for(&self, identifier: &str) -> &ToolbarItem {
         match identifier {
-            "general" => &self.0 .0,
-            "advanced" => &self.0 .1,
+            "general" => &self.0.0,
+            "advanced" => &self.0.1,
             _ => {
                 unreachable!();
             }

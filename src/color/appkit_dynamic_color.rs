@@ -14,10 +14,11 @@ use core_graphics::base::CGFloat;
 use objc::runtime::{Class, Object, Sel};
 use objc::{class, msg_send, sel};
 
-use crate::foundation::{id, load_or_register_class, nil, NSArray, NSInteger};
+use crate::foundation::{NSArray, NSInteger, id, load_or_register_class, nil};
 use crate::utils::os;
 
-pub(crate) const AQUA_LIGHT_COLOR_NORMAL_CONTRAST: &'static str = "AQUA_LIGHT_COLOR_NORMAL_CONTRAST";
+pub(crate) const AQUA_LIGHT_COLOR_NORMAL_CONTRAST: &'static str =
+    "AQUA_LIGHT_COLOR_NORMAL_CONTRAST";
 pub(crate) const AQUA_LIGHT_COLOR_HIGH_CONTRAST: &'static str = "AQUA_LIGHT_COLOR_HIGH_CONTRAST";
 pub(crate) const AQUA_DARK_COLOR_NORMAL_CONTRAST: &'static str = "AQUA_DARK_COLOR_NORMAL_CONTRAST";
 pub(crate) const AQUA_DARK_COLOR_HIGH_CONTRAST: &'static str = "AQUA_DARK_COLOR_HIGH_CONTRAST";
@@ -25,7 +26,7 @@ pub(crate) const AQUA_DARK_COLOR_HIGH_CONTRAST: &'static str = "AQUA_DARK_COLOR_
 // Certain platforms we're interested in supporting (airyx) might not have these yet, so this
 // will just force the Aqua appearance on that platform.
 #[cfg(target_os = "macos")]
-extern "C" {
+unsafe extern "C" {
     static NSAppearanceNameAqua: id;
     static NSAppearanceNameAccessibilityHighContrastAqua: id;
     static NSAppearanceNameDarkAqua: id;
@@ -53,7 +54,7 @@ fn get_effective_color(this: &Object) -> id {
                 NSAppearanceNameAqua,
                 NSAppearanceNameAccessibilityHighContrastAqua,
                 NSAppearanceNameDarkAqua,
-                NSAppearanceNameAccessibilityHighContrastDarkAqua
+                NSAppearanceNameAccessibilityHighContrastDarkAqua,
             ]);
 
             let style: id = msg_send![appearance, bestMatchFromAppearancesWithNames:&*names];
@@ -111,7 +112,14 @@ extern "C" fn get_components(this: &Object, _: Sel, components: CGFloat) {
 }
 
 // @TODO: Confirm this.
-extern "C" fn get_rgba(this: &Object, _: Sel, red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
+extern "C" fn get_rgba(
+    this: &Object,
+    _: Sel,
+    red: CGFloat,
+    green: CGFloat,
+    blue: CGFloat,
+    alpha: CGFloat,
+) {
     let color = get_effective_color(this);
     unsafe {
         let _: () = msg_send![color, getRed:red green:green blue:blue alpha:alpha];
@@ -149,7 +157,14 @@ extern "C" fn brightness_component(this: &Object, _: Sel) -> CGFloat {
 }
 
 // @TODO: Confirm this.
-extern "C" fn get_hsba(this: &Object, _: Sel, hue: CGFloat, sat: CGFloat, brit: CGFloat, alpha: CGFloat) {
+extern "C" fn get_hsba(
+    this: &Object,
+    _: Sel,
+    hue: CGFloat,
+    sat: CGFloat,
+    brit: CGFloat,
+    alpha: CGFloat,
+) {
     let color = get_effective_color(this);
     unsafe {
         let _: () = msg_send![color, getHue:hue saturation:sat brightness:brit alpha:alpha];
@@ -190,7 +205,15 @@ extern "C" fn black_component(this: &Object, _: Sel) -> CGFloat {
 }
 
 // @TODO: Confirm this.
-extern "C" fn get_cmyk(this: &Object, _: Sel, c: CGFloat, m: CGFloat, y: CGFloat, k: CGFloat, a: CGFloat) {
+extern "C" fn get_cmyk(
+    this: &Object,
+    _: Sel,
+    c: CGFloat,
+    m: CGFloat,
+    y: CGFloat,
+    k: CGFloat,
+    a: CGFloat,
+) {
     let color = get_effective_color(this);
     unsafe {
         let _: () = msg_send![color, getCyan:c magenta:m yellow:y black:k alpha:a];
@@ -259,62 +282,119 @@ pub(crate) fn register_class() -> &'static Class {
         decl.add_method(sel!(colorSpace), color_space as extern "C" fn(_, _) -> _);
         decl.add_method(
             sel!(colorUsingColorSpace:),
-            color_using_color_space as extern "C" fn(_, _, _) -> _
+            color_using_color_space as extern "C" fn(_, _, _) -> _,
         );
-        decl.add_method(sel!(colorSpaceName), color_space_name as extern "C" fn(_, _) -> _);
+        decl.add_method(
+            sel!(colorSpaceName),
+            color_space_name as extern "C" fn(_, _) -> _,
+        );
         decl.add_method(
             sel!(colorUsingColorSpaceName:),
-            color_using_color_space_name as extern "C" fn(_, _, _) -> _
+            color_using_color_space_name as extern "C" fn(_, _, _) -> _,
         );
-        decl.add_method(sel!(numberOfComponents), number_of_components as extern "C" fn(_, _) -> _);
+        decl.add_method(
+            sel!(numberOfComponents),
+            number_of_components as extern "C" fn(_, _) -> _,
+        );
 
-        decl.add_method(sel!(getComponents:), get_components as extern "C" fn(_, _, _));
-        decl.add_method(sel!(getRed:green:blue:alpha:), get_rgba as extern "C" fn(_, _, _, _, _, _));
-        decl.add_method(sel!(redComponent), red_component as extern "C" fn(_, _) -> _);
-        decl.add_method(sel!(greenComponent), green_component as extern "C" fn(_, _) -> _);
-        decl.add_method(sel!(blueComponent), blue_component as extern "C" fn(_, _) -> _);
+        decl.add_method(
+            sel!(getComponents:),
+            get_components as extern "C" fn(_, _, _),
+        );
+        decl.add_method(
+            sel!(getRed:green:blue:alpha:),
+            get_rgba as extern "C" fn(_, _, _, _, _, _),
+        );
+        decl.add_method(
+            sel!(redComponent),
+            red_component as extern "C" fn(_, _) -> _,
+        );
+        decl.add_method(
+            sel!(greenComponent),
+            green_component as extern "C" fn(_, _) -> _,
+        );
+        decl.add_method(
+            sel!(blueComponent),
+            blue_component as extern "C" fn(_, _) -> _,
+        );
 
-        decl.add_method(sel!(hueComponent), hue_component as extern "C" fn(_, _) -> _);
-        decl.add_method(sel!(saturationComponent), saturation_component as extern "C" fn(_, _) -> _);
-        decl.add_method(sel!(brightnessComponent), brightness_component as extern "C" fn(_, _) -> _);
+        decl.add_method(
+            sel!(hueComponent),
+            hue_component as extern "C" fn(_, _) -> _,
+        );
+        decl.add_method(
+            sel!(saturationComponent),
+            saturation_component as extern "C" fn(_, _) -> _,
+        );
+        decl.add_method(
+            sel!(brightnessComponent),
+            brightness_component as extern "C" fn(_, _) -> _,
+        );
         decl.add_method(
             sel!(getHue:saturation:brightness:alpha:),
-            get_hsba as extern "C" fn(_, _, _, _, _, _)
+            get_hsba as extern "C" fn(_, _, _, _, _, _),
         );
 
-        decl.add_method(sel!(whiteComponent), white_component as extern "C" fn(_, _) -> _);
-        decl.add_method(sel!(getWhite:alpha:), get_white as extern "C" fn(_, _, _, _));
+        decl.add_method(
+            sel!(whiteComponent),
+            white_component as extern "C" fn(_, _) -> _,
+        );
+        decl.add_method(
+            sel!(getWhite:alpha:),
+            get_white as extern "C" fn(_, _, _, _),
+        );
 
-        decl.add_method(sel!(cyanComponent), cyan_component as extern "C" fn(_, _) -> _);
-        decl.add_method(sel!(magentaComponent), magenta_component as extern "C" fn(_, _) -> _);
-        decl.add_method(sel!(yellowComponent), yellow_component as extern "C" fn(_, _) -> _);
-        decl.add_method(sel!(blackComponent), black_component as extern "C" fn(_, _) -> _);
+        decl.add_method(
+            sel!(cyanComponent),
+            cyan_component as extern "C" fn(_, _) -> _,
+        );
+        decl.add_method(
+            sel!(magentaComponent),
+            magenta_component as extern "C" fn(_, _) -> _,
+        );
+        decl.add_method(
+            sel!(yellowComponent),
+            yellow_component as extern "C" fn(_, _) -> _,
+        );
+        decl.add_method(
+            sel!(blackComponent),
+            black_component as extern "C" fn(_, _) -> _,
+        );
         decl.add_method(
             sel!(getCyan:magenta:yellow:black:alpha:),
-            get_cmyk as extern "C" fn(_, _, _, _, _, _, _)
+            get_cmyk as extern "C" fn(_, _, _, _, _, _, _),
         );
 
-        decl.add_method(sel!(alphaComponent), alpha_component as extern "C" fn(_, _) -> _);
+        decl.add_method(
+            sel!(alphaComponent),
+            alpha_component as extern "C" fn(_, _) -> _,
+        );
 
         decl.add_method(sel!(CGColor), cg_color as extern "C" fn(_, _) -> _);
         decl.add_method(sel!(setStroke), set_stroke as extern "C" fn(_, _));
         decl.add_method(sel!(setFill), set_fill as extern "C" fn(_, _));
         decl.add_method(sel!(set), call_set as extern "C" fn(_, _));
 
-        decl.add_method(sel!(highlightWithLevel:), highlight_with_level as extern "C" fn(_, _, _) -> _);
-        decl.add_method(sel!(shadowWithLevel:), shadow_with_level as extern "C" fn(_, _, _) -> _);
+        decl.add_method(
+            sel!(highlightWithLevel:),
+            highlight_with_level as extern "C" fn(_, _, _) -> _,
+        );
+        decl.add_method(
+            sel!(shadowWithLevel:),
+            shadow_with_level as extern "C" fn(_, _, _) -> _,
+        );
 
         decl.add_method(
             sel!(colorWithAlphaComponent:),
-            color_with_alpha_component as extern "C" fn(_, _, _) -> _
+            color_with_alpha_component as extern "C" fn(_, _, _) -> _,
         );
         decl.add_method(
             sel!(blendedColorWithFraction:ofColor:),
-            blended_color as extern "C" fn(_, _, _, _) -> _
+            blended_color as extern "C" fn(_, _, _, _) -> _,
         );
         decl.add_method(
             sel!(colorWithSystemEffect:),
-            color_with_system_effect as extern "C" fn(_, _, _) -> _
+            color_with_system_effect as extern "C" fn(_, _, _) -> _,
         );
 
         decl.add_ivar::<id>(AQUA_LIGHT_COLOR_NORMAL_CONTRAST);

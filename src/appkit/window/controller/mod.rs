@@ -34,7 +34,7 @@ use objc::rc::{Id, Owned};
 use objc::runtime::Object;
 use objc::{msg_send, msg_send_id, sel};
 
-use crate::appkit::window::{Window, WindowConfig, WindowDelegate, WINDOW_DELEGATE_PTR};
+use crate::appkit::window::{WINDOW_DELEGATE_PTR, Window, WindowConfig, WindowDelegate};
 use crate::foundation::{id, nil};
 use crate::utils::Controller;
 
@@ -48,12 +48,12 @@ pub struct WindowController<T> {
     pub objc: Id<Object, Owned>,
 
     /// The underlying `Window` that this controller wraps.
-    pub window: Window<T>
+    pub window: Window<T>,
 }
 
 impl<T> WindowController<T>
 where
-    T: WindowDelegate + 'static
+    T: WindowDelegate + 'static,
 {
     /// Allocates and configures an `NSWindowController` in the Objective-C/Cocoa runtime that maps over
     /// to your supplied delegate.
@@ -63,7 +63,8 @@ where
         let objc = unsafe {
             let window_controller_class = register_window_controller_class::<T>();
             let controller_alloc = msg_send_id![window_controller_class, alloc];
-            let mut controller: Id<Object, Owned> = msg_send_id![controller_alloc, initWithWindow: &*window.objc];
+            let mut controller: Id<Object, Owned> =
+                msg_send_id![controller_alloc, initWithWindow: &*window.objc];
 
             if let Some(delegate) = &window.delegate {
                 let ptr: *const T = &**delegate;
@@ -102,6 +103,8 @@ where
 
 impl<T> fmt::Debug for WindowController<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("WindowController").field("objc", &self.objc).finish()
+        f.debug_struct("WindowController")
+            .field("objc", &self.objc)
+            .finish()
     }
 }

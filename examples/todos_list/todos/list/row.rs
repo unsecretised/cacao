@@ -10,7 +10,7 @@ use crate::storage::{Todo, TodoStatus};
 #[derive(Default, Debug)]
 pub struct TodoViewRow {
     pub title: Label,
-    pub status: Label
+    pub status: Label,
 }
 
 impl TodoViewRow {
@@ -22,7 +22,7 @@ impl TodoViewRow {
             TodoStatus::Incomplete => {
                 self.status.set_text_color(Color::SystemRed);
                 self.status.set_text("Incomplete");
-            },
+            }
 
             TodoStatus::Complete => {
                 self.status.set_text_color(Color::SystemBlue);
@@ -41,19 +41,38 @@ impl ViewDelegate for TodoViewRow {
         view.add_subview(&self.title);
         view.add_subview(&self.status);
 
-        self.title.set_line_break_mode(LineBreakMode::TruncateMiddle);
+        self.title
+            .set_line_break_mode(LineBreakMode::TruncateMiddle);
 
         let font = Font::system(10.);
         self.status.set_font(&font);
 
         LayoutConstraint::activate(&[
             self.title.top.constraint_equal_to(&view.top).offset(16.),
-            self.title.leading.constraint_equal_to(&view.leading).offset(16.),
-            self.title.trailing.constraint_equal_to(&view.trailing).offset(-16.),
-            self.status.top.constraint_equal_to(&self.title.bottom).offset(8.),
-            self.status.leading.constraint_equal_to(&view.leading).offset(16.),
-            self.status.trailing.constraint_equal_to(&view.trailing).offset(-16.),
-            self.status.bottom.constraint_equal_to(&view.bottom).offset(-16.)
+            self.title
+                .leading
+                .constraint_equal_to(&view.leading)
+                .offset(16.),
+            self.title
+                .trailing
+                .constraint_equal_to(&view.trailing)
+                .offset(-16.),
+            self.status
+                .top
+                .constraint_equal_to(&self.title.bottom)
+                .offset(8.),
+            self.status
+                .leading
+                .constraint_equal_to(&view.leading)
+                .offset(16.),
+            self.status
+                .trailing
+                .constraint_equal_to(&view.trailing)
+                .offset(-16.),
+            self.status
+                .bottom
+                .constraint_equal_to(&view.bottom)
+                .offset(-16.),
         ]);
     }
 }

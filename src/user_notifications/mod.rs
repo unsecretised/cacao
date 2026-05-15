@@ -9,7 +9,7 @@ use block::ConcreteBlock;
 use objc::{class, msg_send, sel};
 use uuid::Uuid;
 
-use crate::foundation::{id, nil, NSString, NSUInteger};
+use crate::foundation::{NSString, NSUInteger, id, nil};
 
 pub mod enums;
 pub use enums::NotificationAuthOption;
@@ -27,7 +27,8 @@ impl NotificationCenter {
         unsafe {
             // @TODO: Revisit.
             let block = ConcreteBlock::new(|_: id, error: id| {
-                let localized_description = NSString::retain(msg_send![error, localizedDescription]);
+                let localized_description =
+                    NSString::retain(msg_send![error, localizedDescription]);
                 let e = localized_description.to_str();
                 if e != "" {
                     println!("{:?}", e);

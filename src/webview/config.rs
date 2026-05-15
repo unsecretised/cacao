@@ -5,7 +5,7 @@ use objc::rc::{Id, Owned};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, NSInteger, NSString, NO, YES};
+use crate::foundation::{NO, NSInteger, NSString, YES, id};
 use crate::webview::enums::InjectAt;
 
 /// A wrapper for `WKWebViewConfiguration`. Holds (retains) pointers for the Objective-C runtime
@@ -14,7 +14,7 @@ use crate::webview::enums::InjectAt;
 pub struct WebViewConfig {
     pub objc: Id<Object, Owned>,
     pub handlers: Vec<String>,
-    pub protocols: Vec<String>
+    pub protocols: Vec<String>,
 }
 
 impl Default for WebViewConfig {
@@ -25,7 +25,7 @@ impl Default for WebViewConfig {
         WebViewConfig {
             objc: config,
             handlers: vec![],
-            protocols: vec![]
+            protocols: vec![],
         }
     }
 }

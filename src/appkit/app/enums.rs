@@ -17,7 +17,7 @@ pub enum TerminateResponse {
     ///
     /// This return value is for primarily for cases where you need to provide alerts
     /// in order to decide whether to quit.
-    Later
+    Later,
 }
 
 impl From<TerminateResponse> for NSUInteger {
@@ -25,7 +25,7 @@ impl From<TerminateResponse> for NSUInteger {
         match response {
             TerminateResponse::Now => 1,
             TerminateResponse::Cancel => 0,
-            TerminateResponse::Later => 2
+            TerminateResponse::Later => 2,
         }
     }
 }
@@ -44,7 +44,7 @@ pub enum AppDelegateResponse {
     Success,
 
     /// Failed.
-    Failure
+    Failure,
 }
 
 impl From<AppDelegateResponse> for NSUInteger {
@@ -52,7 +52,7 @@ impl From<AppDelegateResponse> for NSUInteger {
         match response {
             AppDelegateResponse::Cancelled => 1,
             AppDelegateResponse::Success => 0,
-            AppDelegateResponse::Failure => 2
+            AppDelegateResponse::Failure => 2,
         }
     }
 }
@@ -112,26 +112,26 @@ pub enum PresentationOption {
     AutoHideToolbar,
 
     /// The behavior that allows the user to shake the mouse to locate the cursor is disabled.
-    DisableCursorLocationAssistance
+    DisableCursorLocationAssistance,
 }
 
 impl From<PresentationOption> for NSUInteger {
     fn from(option: PresentationOption) -> Self {
         match option {
             PresentationOption::Default => 0,
-            PresentationOption::AutoHideDock => (1 << 0),
-            PresentationOption::HideDock => (1 << 1),
-            PresentationOption::AutoHideMenuBar => (1 << 2),
-            PresentationOption::HideMenuBar => (1 << 3),
-            PresentationOption::DisableAppleMenu => (1 << 4),
-            PresentationOption::DisableProcessSwitching => (1 << 5),
-            PresentationOption::DisableForceQuit => (1 << 6),
-            PresentationOption::DisableSessionTermination => (1 << 7),
-            PresentationOption::DisableHideApplication => (1 << 8),
-            PresentationOption::DisableMenuBarTransparency => (1 << 9),
-            PresentationOption::FullScreen => (1 << 10),
-            PresentationOption::AutoHideToolbar => (1 << 11),
-            PresentationOption::DisableCursorLocationAssistance => (1 << 12)
+            PresentationOption::AutoHideDock => 1 << 0,
+            PresentationOption::HideDock => 1 << 1,
+            PresentationOption::AutoHideMenuBar => 1 << 2,
+            PresentationOption::HideMenuBar => 1 << 3,
+            PresentationOption::DisableAppleMenu => 1 << 4,
+            PresentationOption::DisableProcessSwitching => 1 << 5,
+            PresentationOption::DisableForceQuit => 1 << 6,
+            PresentationOption::DisableSessionTermination => 1 << 7,
+            PresentationOption::DisableHideApplication => 1 << 8,
+            PresentationOption::DisableMenuBarTransparency => 1 << 9,
+            PresentationOption::FullScreen => 1 << 10,
+            PresentationOption::AutoHideToolbar => 1 << 11,
+            PresentationOption::DisableCursorLocationAssistance => 1 << 12,
         }
     }
 }
@@ -140,19 +140,19 @@ impl From<&PresentationOption> for NSUInteger {
     fn from(option: &PresentationOption) -> Self {
         match option {
             PresentationOption::Default => 0,
-            PresentationOption::AutoHideDock => (1 << 0),
-            PresentationOption::HideDock => (1 << 1),
-            PresentationOption::AutoHideMenuBar => (1 << 2),
-            PresentationOption::HideMenuBar => (1 << 3),
-            PresentationOption::DisableAppleMenu => (1 << 4),
-            PresentationOption::DisableProcessSwitching => (1 << 5),
-            PresentationOption::DisableForceQuit => (1 << 6),
-            PresentationOption::DisableSessionTermination => (1 << 7),
-            PresentationOption::DisableHideApplication => (1 << 8),
-            PresentationOption::DisableMenuBarTransparency => (1 << 9),
-            PresentationOption::FullScreen => (1 << 10),
-            PresentationOption::AutoHideToolbar => (1 << 11),
-            PresentationOption::DisableCursorLocationAssistance => (1 << 12)
+            PresentationOption::AutoHideDock => 1 << 0,
+            PresentationOption::HideDock => 1 << 1,
+            PresentationOption::AutoHideMenuBar => 1 << 2,
+            PresentationOption::HideMenuBar => 1 << 3,
+            PresentationOption::DisableAppleMenu => 1 << 4,
+            PresentationOption::DisableProcessSwitching => 1 << 5,
+            PresentationOption::DisableForceQuit => 1 << 6,
+            PresentationOption::DisableSessionTermination => 1 << 7,
+            PresentationOption::DisableHideApplication => 1 << 8,
+            PresentationOption::DisableMenuBarTransparency => 1 << 9,
+            PresentationOption::FullScreen => 1 << 10,
+            PresentationOption::AutoHideToolbar => 1 << 11,
+            PresentationOption::DisableCursorLocationAssistance => 1 << 12,
         }
     }
 }
@@ -182,7 +182,7 @@ pub enum ModalResponse {
     SecondButtonReturned,
 
     /// The third button in the dialog was clicked.
-    ThirdButtonReturned
+    ThirdButtonReturned,
 }
 
 impl From<NSInteger> for ModalResponse {
@@ -217,7 +217,7 @@ impl Into<NSInteger> for ModalResponse {
             ModalResponse::ThirdButtonReturned => 1002,
             ModalResponse::Stopped => -1000,
             ModalResponse::Aborted => -1001,
-            ModalResponse::Continue => -1002
+            ModalResponse::Continue => -1002,
         }
     }
 }

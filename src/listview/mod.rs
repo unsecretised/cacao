@@ -52,7 +52,7 @@ use objc::runtime::{Class, Object};
 use objc::{class, msg_send, msg_send_id, sel};
 
 use crate::color::Color;
-use crate::foundation::{id, nil, NSArray, NSInteger, NSString, NSUInteger, NO, YES};
+use crate::foundation::{NO, NSArray, NSInteger, NSString, NSUInteger, YES, id, nil};
 use crate::layout::Layout;
 
 #[cfg(feature = "autolayout")]
@@ -61,7 +61,7 @@ use crate::layout::{LayoutAnchorDimension, LayoutAnchorX, LayoutAnchorY};
 use crate::objc_access::ObjcAccess;
 use crate::scrollview::ScrollView;
 use crate::utils::properties::{ObjcProperty, PropertyNullable};
-use crate::utils::{os, CGSize, CellFactory};
+use crate::utils::{CGSize, CellFactory, os};
 use crate::view::{ViewAnimatorProxy, ViewDelegate};
 
 #[cfg(feature = "appkit")]
@@ -126,7 +126,8 @@ fn common_init(class: &Class) -> id {
             // NSTableView requires at least one column to be manually added if doing so by code.
             let identifier = NSString::no_copy("CacaoListViewColumn");
             let default_column_alloc: id = msg_send![class!(NSTableColumn), new];
-            let default_column: id = msg_send![default_column_alloc, initWithIdentifier:&*identifier];
+            let default_column: id =
+                msg_send![default_column_alloc, initWithIdentifier:&*identifier];
             let _: () = msg_send![default_column, setResizingMask:(1<<0)];
             let _: () = msg_send![tableview, addTableColumn: default_column];
         }
@@ -196,7 +197,7 @@ pub struct ListView<T = ()> {
 
     /// A pointer to the Objective-C runtime center Y layout constraint.
     #[cfg(feature = "autolayout")]
-    pub center_y: LayoutAnchorY
+    pub center_y: LayoutAnchorY,
 }
 
 impl Default for ListView {
@@ -272,14 +273,14 @@ impl ListView {
 
             objc: ObjcProperty::retain(view),
 
-            scrollview
+            scrollview,
         }
     }
 }
 
 impl<T> ListView<T>
 where
-    T: ListViewDelegate + 'static
+    T: ListViewDelegate + 'static,
 {
     /// Initializes a new View with a given `ViewDelegate`. This enables you to respond to events
     /// and customize the view as a module, similar to class-based systems.
@@ -351,7 +352,7 @@ where
             #[cfg(feature = "autolayout")]
             center_y: LayoutAnchorY::center(anchor_view),
 
-            scrollview
+            scrollview,
         };
 
         (&mut delegate).did_load(view.clone_as_handle());
@@ -403,7 +404,7 @@ impl<T> ListView<T> {
             #[cfg(feature = "autolayout")]
             center_y: self.center_y.clone(),
 
-            scrollview: self.scrollview.clone_as_handle()
+            scrollview: self.scrollview.clone_as_handle(),
         }
     }
 
@@ -412,7 +413,7 @@ impl<T> ListView<T> {
     pub fn register<F, R>(&self, identifier: &'static str, vendor: F)
     where
         F: Fn() -> R + 'static,
-        R: ViewDelegate + 'static
+        R: ViewDelegate + 'static,
     {
         self.cell_factory.insert(identifier, vendor);
     }
@@ -586,7 +587,8 @@ impl<T> ListView<T> {
             // This is done for a very explicit reason; see the comments on the method itself for
             // an explanation.
             self.hack_avoid_dequeue_loop(|obj| {
-                let _: () = msg_send![obj, insertRowsAtIndexes: &*x, withAnimation: animation_options];
+                let _: () =
+                    msg_send![obj, insertRowsAtIndexes: &*x, withAnimation: animation_options];
             });
         }
     }
@@ -637,7 +639,8 @@ impl<T> ListView<T> {
             let x = index_set.clone();
 
             self.objc.with_mut(|obj| {
-                let _: () = msg_send![obj, removeRowsAtIndexes: &*x, withAnimation: animation_options];
+                let _: () =
+                    msg_send![obj, removeRowsAtIndexes: &*x, withAnimation: animation_options];
             });
         }
     }

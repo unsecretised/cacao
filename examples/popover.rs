@@ -17,29 +17,35 @@ use cacao::notification_center::Dispatcher;
 use cacao::view::{Popover, PopoverConfig, View, ViewController, ViewDelegate};
 
 struct BasicApp {
-    window: WindowController<MyWindow>
+    window: WindowController<MyWindow>,
 }
 
 impl AppDelegate for BasicApp {
     fn did_finish_launching(&self) {
         App::set_menu(vec![
-            Menu::new("", vec![
-                MenuItem::Services,
-                MenuItem::Separator,
-                MenuItem::Hide,
-                MenuItem::HideOthers,
-                MenuItem::ShowAll,
-                MenuItem::Separator,
-                MenuItem::Quit,
-            ]),
+            Menu::new(
+                "",
+                vec![
+                    MenuItem::Services,
+                    MenuItem::Separator,
+                    MenuItem::Hide,
+                    MenuItem::HideOthers,
+                    MenuItem::ShowAll,
+                    MenuItem::Separator,
+                    MenuItem::Quit,
+                ],
+            ),
             Menu::new("File", vec![MenuItem::CloseWindow]),
             Menu::new("View", vec![MenuItem::EnterFullScreen]),
-            Menu::new("Window", vec![
-                MenuItem::Minimize,
-                MenuItem::Zoom,
-                MenuItem::Separator,
-                MenuItem::new("Bring All to Front"),
-            ]),
+            Menu::new(
+                "Window",
+                vec![
+                    MenuItem::Minimize,
+                    MenuItem::Zoom,
+                    MenuItem::Separator,
+                    MenuItem::new("Bring All to Front"),
+                ],
+            ),
         ]);
 
         App::activate();
@@ -54,7 +60,7 @@ impl AppDelegate for BasicApp {
 
 #[derive(Default)]
 struct MyWindow {
-    controller: Option<ViewController<PopoverExampleContentView>>
+    controller: Option<ViewController<PopoverExampleContentView>>,
 }
 
 impl WindowDelegate for MyWindow {
@@ -76,29 +82,37 @@ impl WindowDelegate for MyWindow {
 
 impl MyWindow {
     pub fn on_message(&self, message: Msg) {
-        if let Some(delegate) = self.controller.as_ref().map(|e| &e.view).and_then(|v| v.delegate.as_ref()) {
+        if let Some(delegate) = self
+            .controller
+            .as_ref()
+            .map(|e| &e.view)
+            .and_then(|v| v.delegate.as_ref())
+        {
             delegate.on_message(message);
         }
     }
 }
 
 fn main() {
-    App::new("com.test.window-delegate", BasicApp {
-        window: WindowController::with(WindowConfig::default(), MyWindow::default())
-    })
+    App::new(
+        "com.test.window-delegate",
+        BasicApp {
+            window: WindowController::with(WindowConfig::default(), MyWindow::default()),
+        },
+    )
     .run();
 }
 
 #[derive(Clone, Debug)]
 pub enum Msg {
-    Click
+    Click,
 }
 
 #[derive(Debug, Default)]
 struct PopoverExampleContentView {
     view: Option<View>,
     button: Option<Button>,
-    popover: Option<Popover<PopoverExampleContentViewController>>
+    popover: Option<Popover<PopoverExampleContentViewController>>,
 }
 
 impl PopoverExampleContentView {
@@ -106,15 +120,19 @@ impl PopoverExampleContentView {
         Self {
             view: None,
             button: None,
-            popover: None
+            popover: None,
         }
     }
 
     pub fn on_message(&self, message: Msg) {
         match message {
             Msg::Click => {
-                let Some(ref popover) = self.popover else { return };
-                let Some(ref button) = self.button else { return };
+                let Some(ref popover) = self.popover else {
+                    return;
+                };
+                let Some(ref button) = self.button else {
+                    return;
+                };
                 popover.show_popover(Rect::zero(), button, Edge::MaxY);
             }
         }
@@ -140,7 +158,7 @@ impl ViewDelegate for PopoverExampleContentView {
 
         LayoutConstraint::activate(&[
             button.center_x.constraint_equal_to(&view.center_x),
-            button.center_y.constraint_equal_to(&view.center_y)
+            button.center_y.constraint_equal_to(&view.center_y),
         ]);
 
         self.view = Some(view);
@@ -166,7 +184,7 @@ impl Dispatcher for BasicApp {
 
 #[derive(Debug)]
 struct PopoverExampleContentViewController {
-    pub control: SegmentedControl
+    pub control: SegmentedControl,
 }
 
 impl PopoverExampleContentViewController {
@@ -176,7 +194,10 @@ impl PopoverExampleContentViewController {
             &*Image::symbol(cacao::image::SFSymbol::PaperPlane, "Hello").0,
             &*Image::symbol(cacao::image::SFSymbol::PaperPlaneFilled, "Hello").0,
         ]);
-        let mut control = SegmentedControl::new(images, cacao::appkit::segmentedcontrol::TrackingMode::SelectOne);
+        let mut control = SegmentedControl::new(
+            images,
+            cacao::appkit::segmentedcontrol::TrackingMode::SelectOne,
+        );
         control.set_action(|index| {
             println!("Selected Index {index}");
         });

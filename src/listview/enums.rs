@@ -25,7 +25,7 @@ pub enum RowAnimation {
     SlideLeft,
 
     /// Animates in or out by sliding right.
-    SlideRight
+    SlideRight,
 }
 
 impl Into<NSUInteger> for RowAnimation {
@@ -37,7 +37,7 @@ impl Into<NSUInteger> for RowAnimation {
             RowAnimation::SlideUp => 0x10,
             RowAnimation::SlideDown => 0x20,
             RowAnimation::SlideLeft => 0x30,
-            RowAnimation::SlideRight => 0x40
+            RowAnimation::SlideRight => 0x40,
         }
     }
 }
@@ -51,7 +51,7 @@ pub enum RowEdge {
     Leading,
 
     /// The trailing edge.
-    Trailing
+    Trailing,
 }
 
 impl Into<RowEdge> for NSInteger {

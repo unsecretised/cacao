@@ -1,4 +1,6 @@
-# Cacao
+# Cacao-rs
+
+> This library is a fork of the [Cacao crate](https://github.com/ryanmcgrath/cacao) renamed to cacao-rs since the original crate is no longer being maintained
 
 This library provides safe Rust bindings for `AppKit` on macOS (beta quality, fairly usable) and `UIKit` on iOS/tvOS (alpha quality, see repo).
 It tries to do so in a way that, if you've done programming for the framework before (in Swift or
@@ -31,7 +33,7 @@ with `cargo doc`:
 # Hello World
 
 ```rust
-use cacao::appkit::{App, AppDelegate};
+use cacao_rs::appkit::{App, AppDelegate};
 use cacao::appkit::window::Window;
 
 #[derive(Default)]

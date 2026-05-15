@@ -31,7 +31,7 @@ pub use enums::*;
 use crate::appkit::FocusRingType;
 use crate::color::Color;
 use crate::control::Control;
-use crate::foundation::{id, load_or_register_class, nil, NSString, NSUInteger, NO, YES};
+use crate::foundation::{NO, NSString, NSUInteger, YES, id, load_or_register_class, nil};
 use crate::image::Image;
 use crate::invoker::TargetActionHandler;
 use crate::keys::Key;
@@ -114,7 +114,7 @@ pub struct Button {
 
     /// A pointer to the Objective-C runtime center Y layout constraint.
     #[cfg(feature = "autolayout")]
-    pub center_y: LayoutAnchorY
+    pub center_y: LayoutAnchorY,
 }
 
 impl Button {
@@ -171,7 +171,7 @@ impl Button {
             #[cfg(feature = "autolayout")]
             center_y: LayoutAnchorY::center(view),
 
-            objc: ObjcProperty::retain(view)
+            objc: ObjcProperty::retain(view),
         }
     }
 
@@ -243,14 +243,14 @@ impl Button {
     /// button will fire.
     pub fn set_key_equivalent<'a, K>(&self, key: K)
     where
-        K: Into<Key<'a>>
+        K: Into<Key<'a>>,
     {
         let key: Key<'a> = key.into();
 
         self.objc.with_mut(|obj| {
             let keychar = match key {
                 Key::Char(s) => NSString::new(s),
-                Key::Delete => NSString::new("\u{08}")
+                Key::Delete => NSString::new("\u{08}"),
             };
 
             unsafe {
@@ -366,7 +366,7 @@ fn register_class() -> &'static Class {
     let super_class = "NSButton";
     #[cfg(all(feature = "uikit", not(feature = "appkit")))]
     let super_class = "UIButton";
-    load_or_register_class(super_class, "RSTButton", |decl| unsafe {})
+    load_or_register_class(super_class, "RSTButton", |_decl| {})
 }
 
 #[test]

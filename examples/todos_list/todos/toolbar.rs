@@ -1,9 +1,11 @@
 //! The main Todos window toolbar. Contains a button to enable adding a new task.
 
-use cacao::appkit::toolbar::{ItemIdentifier, Toolbar, ToolbarDelegate, ToolbarDisplayMode, ToolbarItem};
+use cacao::appkit::toolbar::{
+    ItemIdentifier, Toolbar, ToolbarDelegate, ToolbarDisplayMode, ToolbarItem,
+};
 use cacao::button::Button;
 
-use crate::storage::{dispatch_ui, Message};
+use crate::storage::{Message, dispatch_ui};
 
 #[derive(Debug)]
 pub struct TodosToolbar(ToolbarItem);

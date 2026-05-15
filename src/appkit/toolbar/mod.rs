@@ -9,7 +9,7 @@ use objc::rc::{Id, Owned, Shared};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, nil, NSString, NSUInteger, NO, YES};
+use crate::foundation::{NO, NSString, NSUInteger, YES, id, nil};
 
 mod class;
 use class::register_toolbar_class;
@@ -38,12 +38,12 @@ pub struct Toolbar<T = ()> {
     pub objc_delegate: Id<Object, Shared>,
 
     /// The user supplied delegate.
-    pub delegate: Option<Box<T>>
+    pub delegate: Option<Box<T>>,
 }
 
 impl<T> Toolbar<T>
 where
-    T: ToolbarDelegate + 'static
+    T: ToolbarDelegate + 'static,
 {
     /// Creates a new `NSToolbar` instance, configures it appropriately, sets up the delegate
     /// chain, and retains it all.
@@ -55,7 +55,8 @@ where
         let (objc, objc_delegate) = unsafe {
             let alloc = msg_send_id![class!(NSToolbar), alloc];
             let identifier = NSString::new(&identifier);
-            let mut toolbar: Id<Object, Owned> = msg_send_id![alloc, initWithIdentifier: &*identifier];
+            let mut toolbar: Id<Object, Owned> =
+                msg_send_id![alloc, initWithIdentifier: &*identifier];
             let mut objc_delegate: Id<Object, Owned> = msg_send_id![cls, new]; //WithIdentifier:identifier];
 
             let ptr: *const T = &*delegate;
@@ -71,14 +72,14 @@ where
             objc: objc.clone(),
             objc_delegate: objc_delegate.clone(),
             identifier: identifier.clone(),
-            delegate: None
+            delegate: None,
         });
 
         Toolbar {
             identifier,
             objc,
             objc_delegate,
-            delegate: Some(delegate)
+            delegate: Some(delegate),
         }
     }
 }
@@ -137,7 +138,7 @@ impl<T> fmt::Debug for Toolbar<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let delegate = match &self.delegate {
             Some(d) => format!("Some({:p})", d),
-            None => "None".to_string()
+            None => "None".to_string(),
         };
 
         f.debug_struct("Toolbar")

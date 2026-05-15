@@ -2,7 +2,7 @@
 name = "cacao"
 description = "Rust bindings for AppKit (macOS/Airyx/GNUStep, beta) and UIKit (iOS/tvOS, alpha)."
 version = "0.4.0-beta2"
-edition = "2018"
+edition = "2024"
 authors = ["Ryan McGrath <ryan@rymc.io>"]
 build = "build.rs"
 repository = "https://github.com/ryanmcgrath/cacao"
@@ -43,7 +43,7 @@ uikit = []
 autolayout = []
 default = ["appkit", "autolayout"]
 cloudkit = []
-color_fallbacks = []
+color-fallbacks = []
 quicklook = []
 user-notifications = ["uuid"]
 webview = ["infer"]

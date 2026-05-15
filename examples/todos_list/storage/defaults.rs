@@ -50,7 +50,10 @@ fn toggle_bool(key: &str) {
             return;
         }
 
-        panic!("Attempting to toggle a boolean value for {}, but it's not a boolean.", key);
+        panic!(
+            "Attempting to toggle a boolean value for {}, but it's not a boolean.",
+            key
+        );
     }
 
     panic!(
@@ -72,8 +75,14 @@ fn load_bool(key: &str) -> bool {
             return value;
         }
 
-        panic!("Attempting to load a boolean value for {}, but it's not a boolean.", key);
+        panic!(
+            "Attempting to load a boolean value for {}, but it's not a boolean.",
+            key
+        );
     }
 
-    panic!("Attempting to load a boolean value for {}, but this key does not exist.", key);
+    panic!(
+        "Attempting to load a boolean value for {}, but this key does not exist.",
+        key
+    );
 }

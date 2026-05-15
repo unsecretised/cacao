@@ -8,7 +8,7 @@ use objc::rc::{Id, Shared};
 use objc::runtime::Object;
 use objc::{msg_send, sel};
 
-use crate::foundation::{id, nil, to_bool, NSArray, NSString, NO, YES};
+use crate::foundation::{NO, NSArray, NSString, YES, id, nil, to_bool};
 use crate::geometry::Rect;
 use crate::objc_access::ObjcAccess;
 
@@ -99,7 +99,9 @@ pub trait Layout: ObjcAccess {
     /// Returns whether this is hidden, *or* whether an ancestor view is hidden.
     #[cfg(feature = "appkit")]
     fn is_hidden_or_ancestor_is_hidden(&self) -> bool {
-        self.get_from_backing_obj(|obj| to_bool(unsafe { msg_send![obj, isHiddenOrHasHiddenAncestor] }))
+        self.get_from_backing_obj(|obj| {
+            to_bool(unsafe { msg_send![obj, isHiddenOrHasHiddenAncestor] })
+        })
     }
 
     /// Register this view for drag and drop operations.

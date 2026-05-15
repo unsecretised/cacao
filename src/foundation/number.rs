@@ -5,7 +5,7 @@ use objc::rc::{Id, Owned};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, to_bool, NSInteger, BOOL, NO, YES};
+use crate::foundation::{BOOL, NO, NSInteger, YES, id, to_bool};
 
 /// Wrapper for a `NSNumber` object.
 ///

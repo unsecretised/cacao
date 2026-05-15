@@ -62,17 +62,31 @@ impl ViewDelegate for ContentView {
 
         // layouts for labels
         cacao::layout::LayoutConstraint::activate(&[
-            self.label2.top.constraint_equal_to(&self.label.bottom).offset(2.),
-            self.label3.top.constraint_equal_to(&self.label2.bottom).offset(2.),
+            self.label2
+                .top
+                .constraint_equal_to(&self.label.bottom)
+                .offset(2.),
+            self.label3
+                .top
+                .constraint_equal_to(&self.label2.bottom)
+                .offset(2.),
         ]);
 
         // Add layout constraints to be 100% excluding the safe area
         // Do last because it will crash because the view needs to be inside the hierarchy
         cacao::layout::LayoutConstraint::activate(&[
-            self.content.top.constraint_equal_to(&view.safe_layout_guide.top),
-            self.content.leading.constraint_equal_to(&view.safe_layout_guide.leading),
-            self.content.trailing.constraint_equal_to(&view.safe_layout_guide.trailing),
-            self.content.bottom.constraint_equal_to(&view.safe_layout_guide.bottom),
+            self.content
+                .top
+                .constraint_equal_to(&view.safe_layout_guide.top),
+            self.content
+                .leading
+                .constraint_equal_to(&view.safe_layout_guide.leading),
+            self.content
+                .trailing
+                .constraint_equal_to(&view.safe_layout_guide.trailing),
+            self.content
+                .bottom
+                .constraint_equal_to(&view.safe_layout_guide.bottom),
         ])
     }
 }

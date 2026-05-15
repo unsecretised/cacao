@@ -1,12 +1,12 @@
 use objc::declare::ClassDecl;
 use objc::rc::{Id, Owned};
-use objc::runtime::{Class, Object, Sel, BOOL};
+use objc::runtime::{BOOL, Class, Object, Sel};
 use objc::{class, sel};
 
 use crate::foundation::load_or_register_class;
-use crate::foundation::{id, NSUInteger, NO, YES};
+use crate::foundation::{NO, NSUInteger, YES, id};
 use crate::utils::load;
-use crate::view::{ViewDelegate, VIEW_DELEGATE_PTR};
+use crate::view::{VIEW_DELEGATE_PTR, ViewDelegate};
 
 /// Injects an `NSView` subclass. This is used for the default views that don't use delegates - we
 /// have separate classes here since we don't want to waste cycles on methods that will never be

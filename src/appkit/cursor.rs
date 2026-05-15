@@ -1,6 +1,6 @@
 use objc::{class, msg_send, sel};
 
-use crate::foundation::{id, NO, YES};
+use crate::foundation::{NO, YES, id};
 
 /// Represents a type of cursor that you can associate with mouse movement.
 /// @TODO: Loading?
@@ -65,7 +65,7 @@ pub enum CursorType {
     DragCopy,
 
     /// Indicates a context menu will open.
-    ContextMenu
+    ContextMenu,
 }
 
 /// A wrapper around NSCursor.
@@ -123,11 +123,15 @@ impl Cursor {
                 CursorType::ResizeUpDown => msg_send![class!(NSCursor), resizeUpDownCursor],
                 CursorType::DisappearingItem => msg_send![class!(NSCursor), disappearingItemCursor],
                 CursorType::IBeam => msg_send![class!(NSCursor), IBeamCursor],
-                CursorType::IBeamVertical => msg_send![class!(NSCursor), IBeamCursorForVerticalLayout],
-                CursorType::OperationNotAllowed => msg_send![class!(NSCursor), operationNotAllowedCursor],
+                CursorType::IBeamVertical => {
+                    msg_send![class!(NSCursor), IBeamCursorForVerticalLayout]
+                }
+                CursorType::OperationNotAllowed => {
+                    msg_send![class!(NSCursor), operationNotAllowedCursor]
+                }
                 CursorType::DragLink => msg_send![class!(NSCursor), dragLinkCursor],
                 CursorType::DragCopy => msg_send![class!(NSCursor), dragCopyCursor],
-                CursorType::ContextMenu => msg_send![class!(NSCursor), contextualMenuCursor]
+                CursorType::ContextMenu => msg_send![class!(NSCursor), contextualMenuCursor],
             };
 
             let _: () = msg_send![cursor, push];

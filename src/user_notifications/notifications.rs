@@ -5,7 +5,7 @@ use objc::rc::{Id, Owned};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, NSString};
+use crate::foundation::{NSString, id};
 
 /// A wrapper for `UNMutableNotificationContent`. Retains the pointer from the Objective C side,
 /// and is ultimately dropped upon sending.
