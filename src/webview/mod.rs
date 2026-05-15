@@ -19,7 +19,7 @@ use objc::rc::{Id, Owned, Shared};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, nil, NSString, NO, YES};
+use crate::foundation::{NO, NSString, YES, id, nil};
 use crate::geometry::Rect;
 use crate::layer::Layer;
 use crate::layout::Layout;
@@ -66,12 +66,14 @@ fn allocate_webview(mut config: WebViewConfig, objc_delegate: Option<&Object>) -
             let content_controller: id = msg_send![&config.objc, userContentController];
             for handler in handlers {
                 let name = NSString::new(&handler);
-                let _: () = msg_send![content_controller, addScriptMessageHandler:*delegate name:&*name];
+                let _: () =
+                    msg_send![content_controller, addScriptMessageHandler:*delegate name:&*name];
             }
 
             for protocol in protocols {
                 let name = NSString::new(&protocol);
-                let _: () = msg_send![&config.objc, setURLSchemeHandler:*delegate forURLScheme:&*name];
+                let _: () =
+                    msg_send![&config.objc, setURLSchemeHandler:*delegate forURLScheme:&*name];
             }
         }
 
@@ -151,7 +153,7 @@ pub struct WebView<T = ()> {
 
     /// A pointer to the Objective-C runtime center Y layout constraint.
     #[cfg(feature = "autolayout")]
-    pub center_y: LayoutAnchorY
+    pub center_y: LayoutAnchorY,
 }
 
 impl Default for WebView {
@@ -211,7 +213,7 @@ impl WebView {
 
             layer: Layer::from_id(unsafe { msg_send_id![view, layer] }),
 
-            objc: ObjcProperty::retain(view)
+            objc: ObjcProperty::retain(view),
         }
     }
 
@@ -224,7 +226,7 @@ impl WebView {
 
 impl<T> WebView<T>
 where
-    T: WebViewDelegate + 'static
+    T: WebViewDelegate + 'static,
 {
     /// Initializes a new WebView with a given `WebViewDelegate`. This enables you to respond to events
     /// and customize the view as a module, similar to class-based systems.
@@ -289,7 +291,7 @@ impl<T> WebView<T> {
             center_x: self.center_x.clone(),
 
             #[cfg(feature = "autolayout")]
-            center_y: self.center_y.clone()
+            center_y: self.center_y.clone(),
         }
     }
 

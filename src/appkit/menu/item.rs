@@ -9,7 +9,7 @@ use objc::runtime::{Class, Object, Sel};
 use objc::{class, msg_send, msg_send_id, sel};
 
 use crate::events::EventModifierFlag;
-use crate::foundation::{id, load_or_register_class, NSString, NSUInteger};
+use crate::foundation::{NSString, NSUInteger, id, load_or_register_class};
 
 static BLOCK_PTR: &'static str = "cacaoMenuItemBlockPtr";
 
@@ -36,7 +36,7 @@ fn make_menu_item<S: AsRef<str>>(
     title: S,
     key: Option<&str>,
     action: Option<Sel>,
-    modifiers: Option<&[EventModifierFlag]>
+    modifiers: Option<&[EventModifierFlag]>,
 ) -> Id<Object, Owned> {
     unsafe {
         let title = NSString::new(title.as_ref());
@@ -44,7 +44,7 @@ fn make_menu_item<S: AsRef<str>>(
         // Note that AppKit requires a blank string if nil, not nil.
         let key = NSString::new(match key {
             Some(s) => s,
-            None => ""
+            None => "",
         });
 
         // Stock menu items that use selectors targeted at system pieces are just standard
@@ -63,7 +63,7 @@ fn make_menu_item<S: AsRef<str>>(
                 initWithTitle: &*title,
                 action: sel!(fireBlockAction:),
                 keyEquivalent: &*key,
-            ]
+            ],
         };
 
         if let Some(modifiers) = modifiers {
@@ -151,7 +151,7 @@ pub enum MenuItem {
 
     /// Represents a Separator. It's useful nonetheless for
     /// separating out pieces of the `NSMenu` structure.
-    Separator
+    Separator,
 }
 
 impl MenuItem {
@@ -163,8 +163,13 @@ impl MenuItem {
 
             Self::About(app_name) => {
                 let title = format!("About {}", app_name);
-                make_menu_item(&title, None, Some(sel!(orderFrontStandardAboutPanel:)), None)
-            },
+                make_menu_item(
+                    &title,
+                    None,
+                    Some(sel!(orderFrontStandardAboutPanel:)),
+                    None,
+                )
+            }
 
             Self::Hide => make_menu_item("Hide", Some("h"), Some(sel!(hide:)), None),
 
@@ -180,40 +185,48 @@ impl MenuItem {
 
                 let _: () = msg_send![&*item, setSubmenu: services];
                 item
-            },
+            }
 
             Self::HideOthers => make_menu_item(
                 "Hide Others",
                 Some("h"),
                 Some(sel!(hide:)),
-                Some(&[EventModifierFlag::Command, EventModifierFlag::Option])
+                Some(&[EventModifierFlag::Command, EventModifierFlag::Option]),
             ),
 
-            Self::ShowAll => make_menu_item("Show All", None, Some(sel!(unhideAllApplications:)), None),
-            Self::CloseWindow => make_menu_item("Close Window", Some("w"), Some(sel!(performClose:)), None),
+            Self::ShowAll => {
+                make_menu_item("Show All", None, Some(sel!(unhideAllApplications:)), None)
+            }
+            Self::CloseWindow => {
+                make_menu_item("Close Window", Some("w"), Some(sel!(performClose:)), None)
+            }
             Self::Quit => make_menu_item("Quit", Some("q"), Some(sel!(terminate:)), None),
             Self::Copy => make_menu_item("Copy", Some("c"), Some(sel!(copy:)), None),
             Self::Cut => make_menu_item("Cut", Some("x"), Some(sel!(cut:)), None),
             Self::Undo => make_menu_item("Undo", Some("z"), Some(sel!(undo:)), None),
             Self::Redo => make_menu_item("Redo", Some("Z"), Some(sel!(redo:)), None),
-            Self::SelectAll => make_menu_item("Select All", Some("a"), Some(sel!(selectAll:)), None),
+            Self::SelectAll => {
+                make_menu_item("Select All", Some("a"), Some(sel!(selectAll:)), None)
+            }
             Self::Paste => make_menu_item("Paste", Some("v"), Some(sel!(paste:)), None),
 
             Self::EnterFullScreen => make_menu_item(
                 "Enter Full Screen",
                 Some("f"),
                 Some(sel!(toggleFullScreen:)),
-                Some(&[EventModifierFlag::Command, EventModifierFlag::Control])
+                Some(&[EventModifierFlag::Command, EventModifierFlag::Control]),
             ),
 
-            Self::Minimize => make_menu_item("Minimize", Some("m"), Some(sel!(performMiniaturize:)), None),
+            Self::Minimize => {
+                make_menu_item("Minimize", Some("m"), Some(sel!(performMiniaturize:)), None)
+            }
             Self::Zoom => make_menu_item("Zoom", None, Some(sel!(performZoom:)), None),
 
             Self::ToggleSidebar => make_menu_item(
                 "Toggle Sidebar",
                 Some("s"),
                 Some(sel!(toggleSidebar:)),
-                Some(&[EventModifierFlag::Command, EventModifierFlag::Option])
+                Some(&[EventModifierFlag::Command, EventModifierFlag::Option]),
             ),
 
             Self::Separator => {
@@ -325,6 +338,9 @@ pub(crate) fn register_menu_item_class() -> &'static Class {
         decl.add_ivar::<usize>(BLOCK_PTR);
 
         decl.add_method(sel!(dealloc), dealloc_cacao_menuitem as extern "C" fn(_, _));
-        decl.add_method(sel!(fireBlockAction:), fire_block_action as extern "C" fn(_, _, _));
+        decl.add_method(
+            sel!(fireBlockAction:),
+            fire_block_action as extern "C" fn(_, _, _),
+        );
     })
 }

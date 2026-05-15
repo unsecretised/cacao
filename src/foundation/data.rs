@@ -9,7 +9,7 @@ use objc::rc::{Id, Owned};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, to_bool, NSUInteger, BOOL, NO, YES};
+use crate::foundation::{BOOL, NO, NSUInteger, YES, id, to_bool};
 
 /// Wrapper for a retained `NSData` object.
 ///

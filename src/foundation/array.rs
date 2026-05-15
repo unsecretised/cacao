@@ -41,7 +41,7 @@ impl NSArray {
         NSArrayIterator {
             next_index: 0,
             count: self.count(),
-            array: self
+            array: self,
         }
     }
 }
@@ -51,7 +51,7 @@ pub struct NSArrayIterator<'a> {
     next_index: usize,
     count: usize,
 
-    array: &'a NSArray
+    array: &'a NSArray,
 }
 
 impl Iterator for NSArrayIterator<'_> {

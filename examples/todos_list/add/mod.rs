@@ -3,13 +3,13 @@
 use cacao::appkit::window::{Window, WindowDelegate};
 use cacao::view::ViewController;
 
-use crate::storage::{dispatch_ui, Message};
+use crate::storage::{Message, dispatch_ui};
 
 mod view;
 use view::AddNewTodoContentView;
 
 pub struct AddNewTodoWindow {
-    pub content: ViewController<AddNewTodoContentView>
+    pub content: ViewController<AddNewTodoContentView>,
 }
 
 impl AddNewTodoWindow {

@@ -8,7 +8,7 @@ use objc::runtime::Object;
 /// use their standard Rust networking libraries (however... odd... the async story may be).
 use objc::{msg_send, sel};
 
-use crate::foundation::{id, NSString};
+use crate::foundation::{NSString, id};
 
 /// A wrapper around `NSURLRequest`.
 #[derive(Debug)]
@@ -34,7 +34,7 @@ impl URLRequest {
 mod tests {
     use objc::{class, msg_send, sel};
 
-    use crate::foundation::{id, NSString};
+    use crate::foundation::{NSString, id};
     use crate::networking::URLRequest;
 
     #[test]

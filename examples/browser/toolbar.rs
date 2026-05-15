@@ -3,7 +3,9 @@ use cacao::objc::{msg_send, sel};
 use cacao::button::Button;
 use cacao::input::{TextField, TextFieldDelegate};
 
-use cacao::appkit::toolbar::{ItemIdentifier, Toolbar, ToolbarDelegate, ToolbarDisplayMode, ToolbarItem};
+use cacao::appkit::toolbar::{
+    ItemIdentifier, Toolbar, ToolbarDelegate, ToolbarDisplayMode, ToolbarItem,
+};
 
 use super::Action;
 
@@ -27,7 +29,7 @@ pub struct BrowserToolbar {
     back_item: ToolbarItem,
     forwards_item: ToolbarItem,
     url_bar: TextField<URLBar>,
-    url_bar_item: ToolbarItem
+    url_bar_item: ToolbarItem,
 }
 
 impl BrowserToolbar {
@@ -59,7 +61,7 @@ impl BrowserToolbar {
             back_item,
             forwards_item,
             url_bar,
-            url_bar_item
+            url_bar_item,
         }
     }
 

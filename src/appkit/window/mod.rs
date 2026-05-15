@@ -19,11 +19,11 @@ use objc::{class, msg_send, msg_send_id, sel};
 
 use crate::appkit::toolbar::{Toolbar, ToolbarDelegate};
 use crate::color::Color;
-use crate::foundation::{id, nil, to_bool, NSInteger, NSString, NSUInteger, NO, YES};
+use crate::foundation::{NO, NSInteger, NSString, NSUInteger, YES, id, nil, to_bool};
 use crate::geometry::Rect;
 use crate::layout::Layout;
 use crate::objc_access::ObjcAccess;
-use crate::utils::{os, Controller};
+use crate::utils::{Controller, os};
 use crate::view::View;
 
 mod class;
@@ -51,7 +51,7 @@ pub struct Window<T = ()> {
     pub objc: Id<Object, Shared>,
 
     /// A delegate for this window.
-    pub delegate: Option<Box<T>>
+    pub delegate: Option<Box<T>>,
 }
 
 impl Default for Window {
@@ -109,21 +109,23 @@ impl Window {
 
         Window {
             objc: objc,
-            delegate: None
+            delegate: None,
         }
     }
 
     pub(crate) unsafe fn existing(window: *mut Object) -> Window {
-        Window {
-            objc: Id::retain(window).unwrap(),
-            delegate: None
+        unsafe {
+            Window {
+                objc: Id::retain(window).unwrap(),
+                delegate: None,
+            }
         }
     }
 }
 
 impl<T> Window<T>
 where
-    T: WindowDelegate + 'static
+    T: WindowDelegate + 'static,
 {
     /// Constructs a new Window with a `config` and `delegate`. Using a `WindowDelegate` enables
     /// you to respond to window lifecycle events - visibility, movement, and so on. It also
@@ -181,13 +183,13 @@ where
         {
             (&mut delegate).did_load(Window {
                 delegate: None,
-                objc: objc.clone()
+                objc: objc.clone(),
             });
         }
 
         Window {
             objc: objc,
-            delegate: Some(delegate)
+            delegate: Some(delegate),
         }
     }
 }
@@ -564,7 +566,7 @@ impl<T> Window<T> {
     pub fn begin_sheet<F, W>(&self, window: &Window<W>, completion: F)
     where
         F: Fn() + Send + Sync + 'static,
-        W: WindowDelegate + 'static
+        W: WindowDelegate + 'static,
     {
         let block = ConcreteBlock::new(move |_response: NSInteger| {
             completion();
@@ -572,14 +574,15 @@ impl<T> Window<T> {
         let block = block.copy();
 
         unsafe {
-            let _: () = msg_send![&*self.objc, beginSheet: &*window.objc, completionHandler: &*block];
+            let _: () =
+                msg_send![&*self.objc, beginSheet: &*window.objc, completionHandler: &*block];
         }
     }
 
     /// Closes a sheet.
     pub fn end_sheet<W>(&self, window: &Window<W>)
     where
-        W: WindowDelegate + 'static
+        W: WindowDelegate + 'static,
     {
         unsafe {
             let _: () = msg_send![&*self.objc, endSheet:&*window.objc];

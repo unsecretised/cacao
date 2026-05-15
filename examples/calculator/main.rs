@@ -27,7 +27,7 @@ use content_view::CalculatorView;
 struct CalculatorApp {
     window: Window,
     content: View<CalculatorView>,
-    key_monitor: RwLock<Option<EventMonitor>>
+    key_monitor: RwLock<Option<EventMonitor>>,
 }
 
 impl AppDelegate for CalculatorApp {
@@ -44,7 +44,8 @@ impl AppDelegate for CalculatorApp {
         self.window.set_title_visibility(TitleVisibility::Hidden);
         self.window.set_titlebar_appears_transparent(true);
         self.window.set_movable_by_background(true);
-        self.window.set_autosave_name("CacaoCalculatorExampleWindow");
+        self.window
+            .set_autosave_name("CacaoCalculatorExampleWindow");
         self.window.set_content_view(&self.content);
         self.window.show();
     }
@@ -105,10 +106,13 @@ fn main() {
     let mut config = WindowConfig::default();
     config.set_initial_dimensions(100., 100., 240., 300.);
 
-    App::new("com.example.calculator", CalculatorApp {
-        window: Window::new(config),
-        content: View::with(CalculatorView::new()),
-        key_monitor: RwLock::new(None)
-    })
+    App::new(
+        "com.example.calculator",
+        CalculatorApp {
+            window: Window::new(config),
+            content: View::with(CalculatorView::new()),
+            key_monitor: RwLock::new(None),
+        },
+    )
     .run();
 }

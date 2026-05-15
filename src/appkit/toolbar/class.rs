@@ -7,8 +7,8 @@ use objc::rc::Id;
 use objc::runtime::{Bool, Class, Object, Sel};
 use objc::{class, msg_send, sel};
 
-use crate::appkit::toolbar::{ToolbarDelegate, TOOLBAR_PTR};
-use crate::foundation::{id, load_or_register_class, NSArray, NSString};
+use crate::appkit::toolbar::{TOOLBAR_PTR, ToolbarDelegate};
+use crate::foundation::{NSArray, NSString, id, load_or_register_class};
 use crate::utils::load;
 
 /// Retrieves and passes the allowed item identifiers for this toolbar.
@@ -55,7 +55,13 @@ extern "C" fn selectable_item_identifiers<T: ToolbarDelegate>(this: &Object, _: 
 
 /// Loads the controller, grabs whatever item is for this identifier, and returns what the
 /// Objective-C runtime needs.
-extern "C" fn item_for_identifier<T: ToolbarDelegate>(this: &Object, _: Sel, _: id, identifier: id, _: Bool) -> id {
+extern "C" fn item_for_identifier<T: ToolbarDelegate>(
+    this: &Object,
+    _: Sel,
+    _: id,
+    identifier: id,
+    _: Bool,
+) -> id {
     let toolbar = load::<T>(this, TOOLBAR_PTR);
     let identifier = NSString::retain(identifier);
 
@@ -74,19 +80,19 @@ pub(crate) fn register_toolbar_class<T: ToolbarDelegate>(instance: &T) -> &'stat
         // Add callback methods
         decl.add_method(
             sel!(toolbarAllowedItemIdentifiers:),
-            allowed_item_identifiers::<T> as extern "C" fn(_, _, _) -> _
+            allowed_item_identifiers::<T> as extern "C" fn(_, _, _) -> _,
         );
         decl.add_method(
             sel!(toolbarDefaultItemIdentifiers:),
-            default_item_identifiers::<T> as extern "C" fn(_, _, _) -> _
+            default_item_identifiers::<T> as extern "C" fn(_, _, _) -> _,
         );
         decl.add_method(
             sel!(toolbarSelectableItemIdentifiers:),
-            selectable_item_identifiers::<T> as extern "C" fn(_, _, _) -> _
+            selectable_item_identifiers::<T> as extern "C" fn(_, _, _) -> _,
         );
         decl.add_method(
             sel!(toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:),
-            item_for_identifier::<T> as extern "C" fn(_, _, _, _, _) -> _
+            item_for_identifier::<T> as extern "C" fn(_, _, _, _, _) -> _,
         );
     })
 }

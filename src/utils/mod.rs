@@ -11,7 +11,7 @@ use objc::rc::{Id, Shared};
 use objc::runtime::Object;
 use objc::{Encode, Encoding};
 
-use crate::foundation::{id, BOOL, NO, YES};
+use crate::foundation::{BOOL, NO, YES, id};
 
 mod cell_factory;
 pub use cell_factory::CellFactory;
@@ -53,7 +53,7 @@ pub fn load<'a, T>(this: &'a Object, ptr_name: &str) -> &'a T {
 /// Asynchronously execute a callback on the main thread via Grand Central Dispatch.
 pub fn async_main_thread<F>(method: F)
 where
-    F: Fn() + Send + 'static
+    F: Fn() + Send + 'static,
 {
     let queue = dispatch::Queue::main();
     queue.exec_async(method);
@@ -62,7 +62,7 @@ where
 /// Synchronously execute a callback on the main thread via Grand Central Dispatch.
 pub fn sync_main_thread<F>(method: F)
 where
-    F: Fn() + Send + 'static
+    F: Fn() + Send + 'static,
 {
     let queue = dispatch::Queue::main();
     queue.exec_sync(method);
@@ -77,7 +77,7 @@ pub struct CGSize {
     pub width: CGFloat,
 
     /// The height of this size.
-    pub height: CGFloat
+    pub height: CGFloat,
 }
 
 impl CGSize {
@@ -88,7 +88,10 @@ impl CGSize {
 
     /// Create and return a `CGSizeZero` equivalent.
     pub fn zero() -> Self {
-        CGSize { width: 0., height: 0. }
+        CGSize {
+            width: 0.,
+            height: 0.,
+        }
     }
 }
 
@@ -100,14 +103,14 @@ unsafe impl Encode for CGSize {
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct CFRange {
     pub location: CFIndex,
-    pub length: CFIndex
+    pub length: CFIndex,
 }
 
 impl CFRange {
     pub fn init(location: CFIndex, length: CFIndex) -> CFRange {
         CFRange {
             location: location,
-            length: length
+            length: length,
         }
     }
 }

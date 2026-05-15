@@ -40,9 +40,9 @@ use std::ffi::CString;
 use objc::runtime::Object;
 use objc::{class, msg_send, sel};
 
-use crate::foundation::{id, nil, AutoReleasePool, NSString, NSUInteger, NO, YES};
+use crate::foundation::{AutoReleasePool, NO, NSString, NSUInteger, YES, id, nil};
 use crate::notification_center::Dispatcher;
-use crate::uikit::scene::{register_window_scene_delegate_class, WindowSceneDelegate};
+use crate::uikit::scene::{WindowSceneDelegate, register_window_scene_delegate_class};
 use crate::utils::activate_cocoa_multithreading;
 
 mod class;
@@ -62,7 +62,12 @@ pub(crate) static mut SCENE_DELEGATE_VENDOR: usize = 0;
 
 extern "C" {
     /// Required for iOS applications to initialize.
-    fn UIApplicationMain(argc: c_int, argv: *const *const c_char, principal_class_name: id, delegate_class_name: id);
+    fn UIApplicationMain(
+        argc: c_int,
+        argv: *const *const c_char,
+        principal_class_name: id,
+        delegate_class_name: id,
+    );
 }
 
 /// A handler to make some boilerplate less annoying.
@@ -83,7 +88,7 @@ pub struct App<T = (), W = (), F = ()> {
     pub delegate: Box<T>,
     pub vendor: Box<F>,
     pub pool: AutoReleasePool,
-    _w: std::marker::PhantomData<W>
+    _w: std::marker::PhantomData<W>,
 }
 
 // Temporary. ;P
@@ -97,7 +102,7 @@ impl<T, W, F> App<T, W, F>
 where
     T: AppDelegate + 'static,
     W: WindowSceneDelegate,
-    F: Fn() -> Box<W>
+    F: Fn() -> Box<W>,
 {
     /// iOS manages creating a new Application (`UIApplication`) differently than you'd expect if
     /// you were looking at the macOS side of things.
@@ -134,14 +139,14 @@ where
             delegate: app_delegate,
             vendor,
             pool,
-            _w: std::marker::PhantomData
+            _w: std::marker::PhantomData,
         }
     }
 }
 
 impl<T, W, F> App<T, W, F>
 where
-    T: AppDelegate + 'static
+    T: AppDelegate + 'static,
 {
     /// Handles calling through to `UIApplicationMain()`, ensuring that it's using our custom
     /// `UIApplication` and `UIApplicationDelegate` classes.
@@ -150,7 +155,10 @@ where
             .map(|arg| CString::new(arg).unwrap())
             .collect::<Vec<CString>>();
 
-        let c_args = args.iter().map(|arg| arg.as_ptr()).collect::<Vec<*const c_char>>();
+        let c_args = args
+            .iter()
+            .map(|arg| arg.as_ptr())
+            .collect::<Vec<*const c_char>>();
 
         let cls = register_app_class();
         let dl = register_app_delegate_class::<T>();

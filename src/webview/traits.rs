@@ -2,9 +2,9 @@
 //! `WKWebView`. It allows you to do things such as handle opening a file (for uploads or
 //! in-browser-processing), handling navigation actions or JS message callbacks, and so on.
 
+use crate::webview::WebView;
 use crate::webview::actions::{NavigationAction, NavigationResponse, OpenPanelParameters};
 use crate::webview::enums::{NavigationPolicy, NavigationResponsePolicy};
-use crate::webview::WebView;
 
 /// You can implement this on structs to handle callbacks from the underlying `WKWebView`.
 pub trait WebViewDelegate {
@@ -51,20 +51,32 @@ pub trait WebViewDelegate {
 
     /// Given a callback handler, you can decide what policy should be taken for a given browser
     /// action. By default, this is `NavigationPolicy::Allow`.
-    fn policy_for_navigation_action<F: Fn(NavigationPolicy)>(&self, _action: NavigationAction, handler: F) {
+    fn policy_for_navigation_action<F: Fn(NavigationPolicy)>(
+        &self,
+        _action: NavigationAction,
+        handler: F,
+    ) {
         handler(NavigationPolicy::Allow);
     }
 
     /// Given a callback handler, you can decide what policy should be taken for a given browser
     /// response. By default, this is `NavigationResponsePolicy::Allow`.
-    fn policy_for_navigation_response<F: Fn(NavigationResponsePolicy)>(&self, _response: NavigationResponse, handler: F) {
+    fn policy_for_navigation_response<F: Fn(NavigationResponsePolicy)>(
+        &self,
+        _response: NavigationResponse,
+        handler: F,
+    ) {
         handler(NavigationResponsePolicy::Allow);
     }
 
     /// Given a callback handler and some open panel parameters (e.g, if the user is clicking an
     /// upload field that pre-specifies supported options), you should create a `FileSelectPanel`
     /// and thread the callbacks accordingly.
-    fn run_open_panel<F: Fn(Option<Vec<String>>) + 'static>(&self, _parameters: OpenPanelParameters, handler: F) {
+    fn run_open_panel<F: Fn(Option<Vec<String>>) + 'static>(
+        &self,
+        _parameters: OpenPanelParameters,
+        handler: F,
+    ) {
         handler(None);
     }
 
@@ -77,7 +89,11 @@ pub trait WebViewDelegate {
     /// Store, you'll likely need to write some JS in the webview to handle triggering
     /// downloading/saving. This is due to Apple not allowing the private methods on `WKWebView` to
     /// be open, which... well, complain to them, not me. :)
-    fn run_save_panel<F: Fn(bool, Option<String>) + 'static>(&self, _suggested_filename: &str, handler: F) {
+    fn run_save_panel<F: Fn(bool, Option<String>) + 'static>(
+        &self,
+        _suggested_filename: &str,
+        handler: F,
+    ) {
         handler(false, None);
     }
 }

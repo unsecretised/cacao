@@ -12,7 +12,7 @@ use objc::{class, msg_send, msg_send_id, sel};
 
 use crate::appkit::segmentedcontrol::SegmentedControl;
 use crate::button::{BezelStyle, Button};
-use crate::foundation::{id, NSString, NO, YES};
+use crate::foundation::{NO, NSString, YES, id};
 use crate::image::Image;
 use crate::invoker::TargetActionHandler;
 
@@ -24,7 +24,7 @@ pub struct ToolbarItem {
     pub button: Option<Button>,
     pub segmented_control: Option<SegmentedControl>,
     pub image: Option<Image>,
-    handler: Option<TargetActionHandler>
+    handler: Option<TargetActionHandler>,
 }
 
 impl ToolbarItem {
@@ -45,7 +45,7 @@ impl ToolbarItem {
             button: None,
             segmented_control: None,
             image: None,
-            handler: None
+            handler: None,
         }
     }
 

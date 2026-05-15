@@ -4,7 +4,7 @@ use objc::rc::{Id, Shared};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, nil, NSInteger};
+use crate::foundation::{NSInteger, id, nil};
 use crate::layout::constraint::LayoutConstraint;
 
 use super::attributes::{LayoutAttribute, LayoutRelation};
@@ -25,7 +25,7 @@ pub enum LayoutAnchorDimension {
     Width(Id<Object, Shared>),
 
     /// Represents a Height anchor.
-    Height(Id<Object, Shared>)
+    Height(Id<Object, Shared>),
 }
 
 impl Default for LayoutAnchorDimension {
@@ -87,7 +87,7 @@ impl LayoutAnchorDimension {
     /// wrong.
     fn constraint_with<F>(&self, anchor_to: &LayoutAnchorDimension, handler: F) -> LayoutConstraint
     where
-        F: Fn(&Id<Object, Shared>, &Id<Object, Shared>) -> id
+        F: Fn(&Id<Object, Shared>, &Id<Object, Shared>) -> id,
     {
         match (self, anchor_to) {
             (Self::Width(from), Self::Width(to))
@@ -96,15 +96,21 @@ impl LayoutAnchorDimension {
             | (Self::Height(from), Self::Height(to)) => LayoutConstraint::new(handler(from, to)),
 
             (Self::Uninitialized, Self::Uninitialized) => {
-                panic!("Attempted to create constraints with an uninitialized \"from\" and \"to\" dimension anchor.");
-            },
+                panic!(
+                    "Attempted to create constraints with an uninitialized \"from\" and \"to\" dimension anchor."
+                );
+            }
 
             (Self::Uninitialized, _) => {
-                panic!("Attempted to create constraints with an uninitialized \"from\" dimension anchor.");
-            },
+                panic!(
+                    "Attempted to create constraints with an uninitialized \"from\" dimension anchor."
+                );
+            }
 
             (_, Self::Uninitialized) => {
-                panic!("Attempted to create constraints with an uninitialized \"to\" dimension anchor.");
+                panic!(
+                    "Attempted to create constraints with an uninitialized \"to\" dimension anchor."
+                );
             }
         }
     }
@@ -117,14 +123,20 @@ impl LayoutAnchorDimension {
     }
 
     /// Return a constraint greater than or equal to another dimension anchor.
-    pub fn constraint_greater_than_or_equal_to(&self, anchor_to: &LayoutAnchorDimension) -> LayoutConstraint {
+    pub fn constraint_greater_than_or_equal_to(
+        &self,
+        anchor_to: &LayoutAnchorDimension,
+    ) -> LayoutConstraint {
         self.constraint_with(anchor_to, |from, to| unsafe {
             msg_send![from, constraintGreaterThanOrEqualToAnchor:&**to]
         })
     }
 
     /// Return a constraint less than or equal to another dimension anchor.
-    pub fn constraint_less_than_or_equal_to(&self, anchor_to: &LayoutAnchorDimension) -> LayoutConstraint {
+    pub fn constraint_less_than_or_equal_to(
+        &self,
+        anchor_to: &LayoutAnchorDimension,
+    ) -> LayoutConstraint {
         self.constraint_with(anchor_to, |from, to| unsafe {
             msg_send![from, constraintLessThanOrEqualToAnchor:&**to]
         })

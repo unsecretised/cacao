@@ -8,7 +8,7 @@ use objc::{class, msg_send, sel};
 
 use crate::foundation::load_or_register_class;
 use crate::utils::load;
-use crate::view::{ViewDelegate, VIEW_DELEGATE_PTR};
+use crate::view::{VIEW_DELEGATE_PTR, ViewDelegate};
 
 /// Called when the view controller receives a `viewWillAppear` message.
 extern "C" fn will_appear<T: ViewDelegate>(this: &Object, _: Sel) {
@@ -51,13 +51,28 @@ extern "C" fn did_disappear<T: ViewDelegate>(this: &Object, _: Sel) {
 }
 
 /// Registers an `NSViewDelegate`.
-pub(crate) fn register_view_controller_class<T: ViewDelegate + 'static>(instance: &T) -> &'static Class {
-    load_or_register_class("NSViewController", instance.subclass_name(), |decl| unsafe {
-        decl.add_ivar::<usize>(VIEW_DELEGATE_PTR);
+pub(crate) fn register_view_controller_class<T: ViewDelegate + 'static>(
+    instance: &T,
+) -> &'static Class {
+    load_or_register_class(
+        "NSViewController",
+        instance.subclass_name(),
+        |decl| unsafe {
+            decl.add_ivar::<usize>(VIEW_DELEGATE_PTR);
 
-        decl.add_method(sel!(viewWillAppear), will_appear::<T> as extern "C" fn(_, _));
-        decl.add_method(sel!(viewDidAppear), did_appear::<T> as extern "C" fn(_, _));
-        decl.add_method(sel!(viewWillDisappear), will_disappear::<T> as extern "C" fn(_, _));
-        decl.add_method(sel!(viewDidDisappear), did_disappear::<T> as extern "C" fn(_, _));
-    })
+            decl.add_method(
+                sel!(viewWillAppear),
+                will_appear::<T> as extern "C" fn(_, _),
+            );
+            decl.add_method(sel!(viewDidAppear), did_appear::<T> as extern "C" fn(_, _));
+            decl.add_method(
+                sel!(viewWillDisappear),
+                will_disappear::<T> as extern "C" fn(_, _),
+            );
+            decl.add_method(
+                sel!(viewDidDisappear),
+                did_disappear::<T> as extern "C" fn(_, _),
+            );
+        },
+    )
 }

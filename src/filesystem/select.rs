@@ -11,7 +11,7 @@ use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
 use crate::appkit::ModalResponse;
-use crate::foundation::{id, nil, NSInteger, NSString, NO, NSURL, YES};
+use crate::foundation::{NO, NSInteger, NSString, NSURL, YES, id, nil};
 
 #[cfg(feature = "appkit")]
 use crate::appkit::window::{Window, WindowDelegate};
@@ -38,7 +38,7 @@ pub struct FileSelectPanel {
 
     /// When the value of this property is true, the user may select multiple items from the
     /// browser. Defaults to `false`.
-    pub allows_multiple_selection: bool
+    pub allows_multiple_selection: bool,
 }
 
 impl Default for FileSelectPanel {
@@ -62,7 +62,7 @@ impl FileSelectPanel {
             can_choose_files: true,
             can_choose_directories: false,
             resolves_aliases: true,
-            allows_multiple_selection: true
+            allows_multiple_selection: true,
         }
     }
 
@@ -134,7 +134,7 @@ impl FileSelectPanel {
     /// script) or can't easily pass one to use as a sheet.
     pub fn show<F>(&self, handler: F)
     where
-        F: Fn(Vec<NSURL>) + 'static
+        F: Fn(Vec<NSURL>) + 'static,
     {
         let panel = self.panel.clone();
         let completion = ConcreteBlock::new(move |result: NSInteger| {
@@ -142,7 +142,7 @@ impl FileSelectPanel {
 
             handler(match response {
                 ModalResponse::Ok => get_urls(&panel),
-                _ => Vec::new()
+                _ => Vec::new(),
             });
         });
 
@@ -170,7 +170,7 @@ impl FileSelectPanel {
     /// retain/ownership rules here.
     pub fn begin_sheet<T, F>(&self, window: &Window<T>, handler: F)
     where
-        F: Fn(Vec<NSURL>) + 'static
+        F: Fn(Vec<NSURL>) + 'static,
     {
         let panel = self.panel.clone();
         let completion = ConcreteBlock::new(move |result: NSInteger| {
@@ -178,7 +178,7 @@ impl FileSelectPanel {
 
             handler(match response {
                 ModalResponse::Ok => get_urls(&panel),
-                _ => Vec::new()
+                _ => Vec::new(),
             });
         });
 
@@ -198,7 +198,7 @@ impl FileSelectPanel {
 ///
 /// (We mostly do this to find the sweet spot between Rust constructs and necessary Foundation
 /// interaction patterns)
-fn get_urls(panel: &Object) -> Vec<NSURL> {
+fn get_urls(panel: &Object) -> Vec<NSURL<'_>> {
     unsafe {
         let urls: id = msg_send![&*panel, URLs];
         let count: usize = msg_send![urls, count];

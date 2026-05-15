@@ -8,7 +8,7 @@ use objc::rc::{Id, Shared};
 use objc::runtime::{Class, Object};
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, nil, NSArray, NSString, NO, YES};
+use crate::foundation::{NO, NSArray, NSString, YES, id, nil};
 use crate::utils::os;
 
 /// A `Font` can be constructed and applied to supported controls to control things like text
@@ -73,7 +73,9 @@ impl Font {
         let weight = weight as CGFloat;
 
         if os::is_minimum_semversion(10, 15, 0) {
-            Font(unsafe { msg_send_id![class!(NSFont), monospacedSystemFontOfSize: size, weight: weight] })
+            Font(unsafe {
+                msg_send_id![class!(NSFont), monospacedSystemFontOfSize: size, weight: weight]
+            })
         } else {
             Font(unsafe { msg_send_id![class!(NSFont), systemFontOfSize: size, weight: weight] })
         }

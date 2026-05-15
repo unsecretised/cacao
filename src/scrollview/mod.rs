@@ -49,7 +49,7 @@ use objc::runtime::{Class, Object};
 use objc::{msg_send, sel};
 
 use crate::color::Color;
-use crate::foundation::{id, nil, NSArray, NSString, NO, YES};
+use crate::foundation::{NO, NSArray, NSString, YES, id, nil};
 use crate::layout::Layout;
 use crate::objc_access::ObjcAccess;
 use crate::utils::properties::ObjcProperty;
@@ -142,7 +142,7 @@ pub struct ScrollView<T = ()> {
 
     /// A pointer to the Objective-C runtime center Y layout constraint.
     #[cfg(feature = "autolayout")]
-    pub center_y: LayoutAnchorY
+    pub center_y: LayoutAnchorY,
 }
 
 impl Default for ScrollView {
@@ -189,14 +189,14 @@ impl ScrollView {
             #[cfg(feature = "autolayout")]
             center_y: LayoutAnchorY::center(view),
 
-            objc: ObjcProperty::retain(view)
+            objc: ObjcProperty::retain(view),
         }
     }
 }
 
 impl<T> ScrollView<T>
 where
-    T: ScrollViewDelegate + 'static
+    T: ScrollViewDelegate + 'static,
 {
     /// Initializes a new View with a given `ViewDelegate`. This enables you to respond to events
     /// and customize the view as a module, similar to class-based systems.
@@ -242,7 +242,7 @@ where
             #[cfg(feature = "autolayout")]
             center_y: LayoutAnchorY::center(view),
 
-            objc: ObjcProperty::retain(view)
+            objc: ObjcProperty::retain(view),
         };
 
         (&mut delegate).did_load(view.clone_as_handle());
@@ -290,7 +290,7 @@ impl<T> ScrollView<T> {
             #[cfg(feature = "autolayout")]
             center_y: self.center_y.clone(),
 
-            objc: self.objc.clone()
+            objc: self.objc.clone(),
         }
     }
 

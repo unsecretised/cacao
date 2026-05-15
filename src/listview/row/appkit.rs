@@ -12,8 +12,8 @@ use objc::runtime::{Bool, Class, Object, Sel};
 use objc::{class, msg_send, sel};
 
 use crate::dragdrop::DragInfo;
-use crate::foundation::{id, load_or_register_class, nil, NSUInteger};
-use crate::listview::row::{ViewDelegate, BACKGROUND_COLOR, LISTVIEW_ROW_DELEGATE_PTR};
+use crate::foundation::{NSUInteger, id, load_or_register_class, nil};
+use crate::listview::row::{BACKGROUND_COLOR, LISTVIEW_ROW_DELEGATE_PTR, ViewDelegate};
 use crate::utils::load;
 
 /// Enforces normalcy, or: a needlessly cruel method in terms of the name. You get the idea though.
@@ -25,17 +25,21 @@ extern "C" fn enforce_normalcy(_: &Object, _: Sel) -> Bool {
 extern "C" fn dragging_entered<T: ViewDelegate>(this: &mut Object, _: Sel, info: id) -> NSUInteger {
     let view = load::<T>(this, LISTVIEW_ROW_DELEGATE_PTR);
     view.dragging_entered(DragInfo {
-        info: unsafe { Id::retain(info).unwrap() }
+        info: unsafe { Id::retain(info).unwrap() },
     })
     .into()
 }
 
 /// Called when a drag/drop operation has entered this view.
-extern "C" fn prepare_for_drag_operation<T: ViewDelegate>(this: &mut Object, _: Sel, info: id) -> Bool {
+extern "C" fn prepare_for_drag_operation<T: ViewDelegate>(
+    this: &mut Object,
+    _: Sel,
+    info: id,
+) -> Bool {
     let view = load::<T>(this, LISTVIEW_ROW_DELEGATE_PTR);
 
     Bool::new(view.prepare_for_drag_operation(DragInfo {
-        info: unsafe { Id::retain(info).unwrap() }
+        info: unsafe { Id::retain(info).unwrap() },
     }))
 }
 
@@ -44,7 +48,7 @@ extern "C" fn perform_drag_operation<T: ViewDelegate>(this: &mut Object, _: Sel,
     let view = load::<T>(this, LISTVIEW_ROW_DELEGATE_PTR);
 
     Bool::new(view.perform_drag_operation(DragInfo {
-        info: unsafe { Id::retain(info).unwrap() }
+        info: unsafe { Id::retain(info).unwrap() },
     }))
 }
 
@@ -53,7 +57,7 @@ extern "C" fn conclude_drag_operation<T: ViewDelegate>(this: &mut Object, _: Sel
     let view = load::<T>(this, LISTVIEW_ROW_DELEGATE_PTR);
 
     view.conclude_drag_operation(DragInfo {
-        info: unsafe { Id::retain(info).unwrap() }
+        info: unsafe { Id::retain(info).unwrap() },
     });
 }
 
@@ -62,7 +66,7 @@ extern "C" fn dragging_exited<T: ViewDelegate>(this: &mut Object, _: Sel, info: 
     let view = load::<T>(this, LISTVIEW_ROW_DELEGATE_PTR);
 
     view.dragging_exited(DragInfo {
-        info: unsafe { Id::retain(info).unwrap() }
+        info: unsafe { Id::retain(info).unwrap() },
     });
 }
 
@@ -99,7 +103,10 @@ extern "C" fn dealloc<T: ViewDelegate>(this: &Object, _: Sel) {
 /// used if there's no delegates.
 pub(crate) fn register_listview_row_class() -> &'static Class {
     load_or_register_class("NSView", "RSTTableViewRow", |decl| unsafe {
-        decl.add_method(sel!(isFlipped), enforce_normalcy as extern "C" fn(_, _) -> _);
+        decl.add_method(
+            sel!(isFlipped),
+            enforce_normalcy as extern "C" fn(_, _) -> _,
+        );
     })
 }
 
@@ -112,24 +119,33 @@ pub(crate) fn register_listview_row_class_with_delegate<T: ViewDelegate>() -> &'
         decl.add_ivar::<usize>(LISTVIEW_ROW_DELEGATE_PTR);
         decl.add_ivar::<id>(BACKGROUND_COLOR);
 
-        decl.add_method(sel!(isFlipped), enforce_normalcy as extern "C" fn(_, _) -> _);
+        decl.add_method(
+            sel!(isFlipped),
+            enforce_normalcy as extern "C" fn(_, _) -> _,
+        );
         decl.add_method(sel!(updateLayer), update_layer as extern "C" fn(_, _));
 
         // Drag and drop operations (e.g, accepting files)
-        decl.add_method(sel!(draggingEntered:), dragging_entered::<T> as extern "C" fn(_, _, _) -> _);
+        decl.add_method(
+            sel!(draggingEntered:),
+            dragging_entered::<T> as extern "C" fn(_, _, _) -> _,
+        );
         decl.add_method(
             sel!(prepareForDragOperation:),
-            prepare_for_drag_operation::<T> as extern "C" fn(_, _, _) -> _
+            prepare_for_drag_operation::<T> as extern "C" fn(_, _, _) -> _,
         );
         decl.add_method(
             sel!(performDragOperation:),
-            perform_drag_operation::<T> as extern "C" fn(_, _, _) -> _
+            perform_drag_operation::<T> as extern "C" fn(_, _, _) -> _,
         );
         decl.add_method(
             sel!(concludeDragOperation:),
-            conclude_drag_operation::<T> as extern "C" fn(_, _, _)
+            conclude_drag_operation::<T> as extern "C" fn(_, _, _),
         );
-        decl.add_method(sel!(draggingExited:), dragging_exited::<T> as extern "C" fn(_, _, _));
+        decl.add_method(
+            sel!(draggingExited:),
+            dragging_exited::<T> as extern "C" fn(_, _, _),
+        );
 
         // Cleanup
         decl.add_method(sel!(dealloc), dealloc::<T> as extern "C" fn(_, _));

@@ -21,7 +21,7 @@ pub struct PreferencesWindow {
     pub toolbar: Toolbar<PreferencesToolbar>,
     pub general: ViewController<GeneralPreferencesContentView>,
     pub advanced: ViewController<AdvancedPreferencesContentView>,
-    window: Option<Window>
+    window: Option<Window>,
 }
 
 impl PreferencesWindow {
@@ -30,7 +30,7 @@ impl PreferencesWindow {
             toolbar: Toolbar::new("PreferencesToolbar", PreferencesToolbar::default()),
             general: ViewController::new(GeneralPreferencesContentView::default()),
             advanced: ViewController::new(AdvancedPreferencesContentView::default()),
-            window: None
+            window: None,
         }
     }
 
@@ -41,12 +41,12 @@ impl PreferencesWindow {
             Message::SwitchPreferencesToGeneralPane => {
                 window.set_title("General");
                 window.set_content_view_controller(&self.general);
-            },
+            }
 
             Message::SwitchPreferencesToAdvancedPane => {
                 window.set_title("Advanced");
                 window.set_content_view_controller(&self.advanced);
-            },
+            }
 
             _ => {}
         }

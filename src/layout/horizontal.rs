@@ -28,7 +28,7 @@ pub enum LayoutAnchorX {
     Right(Id<Object, Shared>),
 
     /// Represents a center anchor on the X axis.
-    Center(Id<Object, Shared>)
+    Center(Id<Object, Shared>),
 }
 
 impl Default for LayoutAnchorX {
@@ -69,7 +69,7 @@ impl LayoutAnchorX {
     /// wrong.
     fn constraint_with<F>(&self, anchor_to: &LayoutAnchorX, handler: F) -> LayoutConstraint
     where
-        F: Fn(&Id<Object, Shared>, &Id<Object, Shared>) -> id
+        F: Fn(&Id<Object, Shared>, &Id<Object, Shared>) -> id,
     {
         match (self, anchor_to) {
             // The anchors that can connect to each other. These blocks could be condensed, but are
@@ -82,9 +82,9 @@ impl LayoutAnchorX {
             | (Self::Trailing(from), Self::Leading(to))
             | (Self::Trailing(from), Self::Center(to)) => LayoutConstraint::new(handler(from, to)),
 
-            (Self::Left(from), Self::Left(to)) | (Self::Left(from), Self::Right(to)) | (Self::Left(from), Self::Center(to)) => {
-                LayoutConstraint::new(handler(from, to))
-            },
+            (Self::Left(from), Self::Left(to))
+            | (Self::Left(from), Self::Right(to))
+            | (Self::Left(from), Self::Center(to)) => LayoutConstraint::new(handler(from, to)),
 
             (Self::Right(from), Self::Right(to))
             | (Self::Right(from), Self::Left(to))
@@ -107,7 +107,7 @@ impl LayoutAnchorX {
                     Use either left/right or leading/trailing.
                 "#
                 );
-            },
+            }
 
             (Self::Leading(_), Self::Right(_)) | (Self::Right(_), Self::Leading(_)) => {
                 panic!(
@@ -118,7 +118,7 @@ impl LayoutAnchorX {
                     Use either left/right or leading/trailing.
                 "#
                 );
-            },
+            }
 
             (Self::Trailing(_), Self::Left(_)) | (Self::Left(_), Self::Trailing(_)) => {
                 panic!(
@@ -129,7 +129,7 @@ impl LayoutAnchorX {
                     Use either left/right or leading/trailing.
                 "#
                 );
-            },
+            }
 
             (Self::Trailing(_), Self::Right(_)) | (Self::Right(_), Self::Trailing(_)) => {
                 panic!(
@@ -140,16 +140,18 @@ impl LayoutAnchorX {
                     Use either left/right or leading/trailing.
                 "#
                 );
-            },
+            }
 
             // If anything is attempted with an uninitialized anchor, then block it.
             (Self::Uninitialized, Self::Uninitialized) => {
-                panic!("Attempted to create constraints with an uninitialized \"from\" and \"to\" X anchor.");
-            },
+                panic!(
+                    "Attempted to create constraints with an uninitialized \"from\" and \"to\" X anchor."
+                );
+            }
 
             (Self::Uninitialized, _) => {
                 panic!("Attempted to create constraints with an uninitialized \"from\" X anchor.");
-            },
+            }
 
             (_, Self::Uninitialized) => {
                 panic!("Attempted to create constraints with an uninitialized \"to\" X anchor.");
@@ -165,7 +167,10 @@ impl LayoutAnchorX {
     }
 
     /// Return a constraint greater than or equal to another horizontal anchor.
-    pub fn constraint_greater_than_or_equal_to(&self, anchor_to: &LayoutAnchorX) -> LayoutConstraint {
+    pub fn constraint_greater_than_or_equal_to(
+        &self,
+        anchor_to: &LayoutAnchorX,
+    ) -> LayoutConstraint {
         self.constraint_with(anchor_to, |from, to| unsafe {
             msg_send![from, constraintGreaterThanOrEqualToAnchor:&**to]
         })

@@ -4,16 +4,16 @@ use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
 #[cfg(feature = "appkit")]
+use crate::appkit::App;
+#[cfg(feature = "appkit")]
 use crate::appkit::toolbar::ToolbarItem;
 #[cfg(feature = "appkit")]
 use crate::appkit::window::Window;
-#[cfg(feature = "appkit")]
-use crate::appkit::App;
 
-use crate::foundation::{id, nil, NSString};
+use crate::foundation::{NSString, id, nil};
 use crate::geometry::{Edge, Rect};
 use crate::layout::Layout;
-use crate::utils::{os, CGSize, Controller};
+use crate::utils::{CGSize, Controller, os};
 use crate::view::{View, ViewController, ViewDelegate};
 
 #[derive(Debug, Eq, PartialEq)]
@@ -24,14 +24,14 @@ pub enum PopoverBehaviour {
     /// The system will close the popover when the user interacts with a user interface element outside the popover.
     Transient = 1,
     /// The system will close the popover when the user interacts with user interface elements in the window containing the popover's positioning view.
-    Semitransient = 2
+    Semitransient = 2,
 }
 
 #[derive(Debug)]
 pub struct PopoverConfig {
     pub content_size: CGSize,
     pub animates: bool,
-    pub behaviour: PopoverBehaviour
+    pub behaviour: PopoverBehaviour,
 }
 
 impl Default for PopoverConfig {
@@ -39,10 +39,10 @@ impl Default for PopoverConfig {
         Self {
             content_size: CGSize {
                 width: 320.0,
-                height: 320.0
+                height: 320.0,
             },
             animates: true,
-            behaviour: PopoverBehaviour::Transient
+            behaviour: PopoverBehaviour::Transient,
         }
     }
 }
@@ -53,12 +53,12 @@ pub struct Popover<Content> {
     pub objc: Id<Object, Shared>,
 
     /// The wrapped ViewController.
-    pub view_controller: ViewController<Content>
+    pub view_controller: ViewController<Content>,
 }
 
 impl<Content> Popover<Content>
 where
-    Content: ViewDelegate + 'static
+    Content: ViewDelegate + 'static,
 {
     pub fn new(content: Content, config: PopoverConfig) -> Self {
         let view_controller = ViewController::new(content);
@@ -72,7 +72,10 @@ where
             pop
         };
 
-        Popover { objc, view_controller }
+        Popover {
+            objc,
+            view_controller,
+        }
     }
 }
 

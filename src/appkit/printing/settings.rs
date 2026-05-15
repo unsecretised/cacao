@@ -10,14 +10,14 @@ use crate::foundation::id;
 /// application/user.
 #[derive(Clone, Debug)]
 pub struct PrintSettings {
-    pub inner: Id<Object, Shared>
+    pub inner: Id<Object, Shared>,
 }
 
 impl PrintSettings {
     /// Internal method, constructs a wrapper around the backing `NSDictionary` print settings.
     pub(crate) fn with_inner(inner: id) -> Self {
         PrintSettings {
-            inner: unsafe { Id::retain(inner).unwrap() }
+            inner: unsafe { Id::retain(inner).unwrap() },
         }
     }
 }

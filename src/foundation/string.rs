@@ -7,7 +7,7 @@ use objc::rc::{Id, Owned};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, to_bool, BOOL, NO, YES};
+use crate::foundation::{BOOL, NO, YES, id, to_bool};
 
 const UTF8_ENCODING: usize = 4;
 
@@ -19,7 +19,7 @@ const UTF8_ENCODING: usize = 4;
 pub struct NSString<'a> {
     /// A reference to the backing `NSString`.
     pub objc: Id<Object, Owned>,
-    phantom: PhantomData<&'a ()>
+    phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> NSString<'a> {
@@ -35,7 +35,7 @@ impl<'a> NSString<'a> {
                 ]
             },
 
-            phantom: PhantomData
+            phantom: PhantomData,
         }
     }
 
@@ -53,7 +53,7 @@ impl<'a> NSString<'a> {
                 ]
             },
 
-            phantom: PhantomData
+            phantom: PhantomData,
         }
     }
 
@@ -62,14 +62,14 @@ impl<'a> NSString<'a> {
     pub fn retain(object: id) -> Self {
         NSString {
             objc: unsafe { Id::retain(object).unwrap() },
-            phantom: PhantomData
+            phantom: PhantomData,
         }
     }
 
     pub fn from_id(objc: Id<Object, Owned>) -> Self {
         Self {
             objc,
-            phantom: PhantomData
+            phantom: PhantomData,
         }
     }
 

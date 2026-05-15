@@ -16,7 +16,7 @@ pub struct Rect {
     pub width: f64,
 
     /// Height, in points.
-    pub height: f64
+    pub height: f64,
 }
 
 impl Rect {
@@ -26,7 +26,7 @@ impl Rect {
             top: top,
             left: left,
             width: width,
-            height: height
+            height: height,
         }
     }
 
@@ -36,7 +36,7 @@ impl Rect {
             top: 0.0,
             left: 0.0,
             width: 0.0,
-            height: 0.0
+            height: 0.0,
         }
     }
 }
@@ -47,11 +47,14 @@ pub enum Edge {
     MinX = 0,
     MinY = 1,
     MaxX = 2,
-    MaxY = 3
+    MaxY = 3,
 }
 impl From<Rect> for CGRect {
     fn from(rect: Rect) -> CGRect {
-        CGRect::new(&CGPoint::new(rect.left, rect.top), &CGSize::new(rect.width, rect.height))
+        CGRect::new(
+            &CGPoint::new(rect.left, rect.top),
+            &CGSize::new(rect.width, rect.height),
+        )
     }
 }
 
@@ -61,7 +64,7 @@ impl From<CGRect> for Rect {
             top: rect.origin.y as f64,
             left: rect.origin.x as f64,
             width: rect.size.width as f64,
-            height: rect.size.height as f64
+            height: rect.size.height as f64,
         }
     }
 }

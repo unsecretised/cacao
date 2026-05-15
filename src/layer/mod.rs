@@ -37,14 +37,14 @@ use crate::utils::properties::ObjcProperty;
 #[derive(Clone, Debug)]
 pub struct Layer {
     /// The underlying layer pointer.
-    pub objc: Id<Object, Shared>
+    pub objc: Id<Object, Shared>,
 }
 
 impl Layer {
     /// Creates a new `CALayer` and retains it.
     pub fn new() -> Self {
         Layer {
-            objc: unsafe { msg_send_id![class!(CALayer), new] }
+            objc: unsafe { msg_send_id![class!(CALayer), new] },
         }
     }
 

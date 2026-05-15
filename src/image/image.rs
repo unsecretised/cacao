@@ -8,11 +8,11 @@ use block::ConcreteBlock;
 use core_graphics::context::{CGContext, CGContextRef};
 use core_graphics::{
     base::CGFloat,
-    geometry::{CGPoint, CGRect, CGSize}
+    geometry::{CGPoint, CGRect, CGSize},
 };
 
 use super::icons::*;
-use crate::foundation::{id, NSData, NSString, NSURL};
+use crate::foundation::{NSData, NSString, NSURL, id};
 use crate::utils::os;
 
 /// Specifies resizing behavior for image drawing.
@@ -28,7 +28,7 @@ pub enum ResizeBehavior {
     Stretch,
 
     /// Center and then let whatever else flow around it.
-    Center
+    Center,
 }
 
 fn max_cgfloat(x: CGFloat, y: CGFloat) -> CGFloat {
@@ -38,7 +38,7 @@ fn max_cgfloat(x: CGFloat, y: CGFloat) -> CGFloat {
 
     match x > y {
         true => x,
-        false => y
+        false => y,
     }
 }
 
@@ -49,7 +49,7 @@ fn min_cgfloat(x: CGFloat, y: CGFloat) -> CGFloat {
 
     match x < y {
         true => x,
-        false => y
+        false => y,
     }
 }
 
@@ -66,7 +66,11 @@ impl ResizeBehavior {
             return source;
         }
 
-        if source.origin.x == 0. && source.origin.y == 0. && source.size.width == 0. && source.size.height == 0. {
+        if source.origin.x == 0.
+            && source.origin.y == 0.
+            && source.size.width == 0.
+            && source.size.height == 0.
+        {
             return source;
         }
 
@@ -78,14 +82,14 @@ impl ResizeBehavior {
             ResizeBehavior::AspectFit => {
                 scales.width = min_cgfloat(scales.width, scales.height);
                 scales.height = scales.width;
-            },
+            }
 
             ResizeBehavior::AspectFill => {
                 scales.width = max_cgfloat(scales.width, scales.height);
                 scales.height = scales.width;
-            },
+            }
 
-            ResizeBehavior::Stretch => { /* will do this as default */ },
+            ResizeBehavior::Stretch => { /* will do this as default */ }
 
             ResizeBehavior::Center => {
                 scales.width = 1.;
@@ -113,7 +117,7 @@ pub struct DrawConfig {
     pub target: (CGFloat, CGFloat),
 
     /// The type of resizing to use during drawing and scaling.
-    pub resize: ResizeBehavior
+    pub resize: ResizeBehavior,
 }
 
 /// Wraps `NSImage` under AppKit, and `UIImage` on under UIKit (iOS and tvOS). Can be used to display images, icons,
@@ -199,7 +203,7 @@ impl Image {
                         imageWithSystemSymbolName: &*icon,
                         accessibilityDescription: &*desc,
                     ]
-                },
+                }
 
                 false => {
                     let icon = icon.to_id();
@@ -236,7 +240,7 @@ impl Image {
                         imageWithSystemSymbolName:&*icon,
                         accessibilityDescription:&*desc,
                     ]
-                },
+                }
 
                 false => {
                     #[cfg(feature = "appkit")]
@@ -256,24 +260,31 @@ impl Image {
     #[cfg(feature = "appkit")]
     pub fn draw<F>(config: DrawConfig, handler: F) -> Self
     where
-        F: Fn(CGRect, &CGContextRef) -> bool + 'static
+        F: Fn(CGRect, &CGContextRef) -> bool + 'static,
     {
-        let source_frame = CGRect::new(&CGPoint::new(0., 0.), &CGSize::new(config.source.0, config.source.1));
+        let source_frame = CGRect::new(
+            &CGPoint::new(0., 0.),
+            &CGSize::new(config.source.0, config.source.1),
+        );
 
-        let target_frame = CGRect::new(&CGPoint::new(0., 0.), &CGSize::new(config.target.0, config.target.1));
+        let target_frame = CGRect::new(
+            &CGPoint::new(0., 0.),
+            &CGSize::new(config.target.0, config.target.1),
+        );
 
         let resized_frame = config.resize.apply(source_frame, target_frame);
 
         let block = ConcreteBlock::new(move |_destination: CGRect| unsafe {
             let current_context: id = msg_send![class!(NSGraphicsContext), currentContext];
-            let context_ptr: core_graphics::sys::CGContextRef = msg_send![current_context, CGContext];
+            let context_ptr: core_graphics::sys::CGContextRef =
+                msg_send![current_context, CGContext];
             let context = CGContext::from_existing_context_ptr(context_ptr);
             let _: () = msg_send![class!(NSGraphicsContext), saveGraphicsState];
 
             context.translate(resized_frame.origin.x, resized_frame.origin.y);
             context.scale(
                 resized_frame.size.width / config.source.0,
-                resized_frame.size.height / config.source.1
+                resized_frame.size.height / config.source.1,
             );
 
             let result = handler(resized_frame, &context);

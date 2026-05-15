@@ -2,7 +2,7 @@ use objc::rc::{Id, Owned};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, load_or_register_class, ClassMap, NSString};
+use crate::foundation::{ClassMap, NSString, id, load_or_register_class};
 
 use crate::uikit::scene::SessionRole;
 
@@ -29,7 +29,8 @@ impl SceneConfig {
             let _: () = msg_send![&mut config, setSceneClass: class!(UIWindowScene)];
 
             // TODO: use register_window_scene_delegate_class rather than load_or_register_class.
-            let window_delegate = load_or_register_class("UIResponder", "RSTWindowSceneDelegate", |decl| unsafe {});
+            let window_delegate =
+                load_or_register_class("UIResponder", "RSTWindowSceneDelegate", |decl| unsafe {});
             let _: () = msg_send![&mut config, setDelegateClass: window_delegate];
 
             config

@@ -8,7 +8,7 @@ use objc::sel;
 
 //use crate::error::Error;
 use crate::foundation::{id, load_or_register_class_with_optional_generated_suffix};
-use crate::uikit::app::{AppDelegate, APP_DELEGATE};
+use crate::uikit::app::{APP_DELEGATE, AppDelegate};
 use crate::uikit::scene::{SceneConnectionOptions, SceneSession};
 
 //use std::unreachable;
@@ -33,11 +33,20 @@ extern "C" fn did_finish_launching<T: AppDelegate>(this: &Object, _: Sel, _: id,
     Bool::YES
 }
 
-extern "C" fn configuration_for_scene_session<T: AppDelegate>(this: &Object, _: Sel, _: id, session: id, opts: id) -> id {
+extern "C" fn configuration_for_scene_session<T: AppDelegate>(
+    this: &Object,
+    _: Sel,
+    _: id,
+    session: id,
+    opts: id,
+) -> id {
     Id::autorelease_return(
         app::<T>(this)
-            .config_for_scene_session(SceneSession::with(session), SceneConnectionOptions::with(opts))
-            .0
+            .config_for_scene_session(
+                SceneSession::with(session),
+                SceneConnectionOptions::with(opts),
+            )
+            .0,
     )
 }
 
@@ -46,21 +55,26 @@ extern "C" fn configuration_for_scene_session<T: AppDelegate>(this: &Object, _: 
 pub(crate) fn register_app_delegate_class<T: AppDelegate>() -> &'static Class {
     let should_generate_suffix = false;
 
-    load_or_register_class_with_optional_generated_suffix("NSObject", "RSTAppDelegate", should_generate_suffix, |decl| unsafe {
-        // Launching Applications
-        decl.add_method(
-            sel!(application:didFinishLaunchingWithOptions:),
-            did_finish_launching::<T> as extern "C" fn(_, _, _, _) -> _
-        );
+    load_or_register_class_with_optional_generated_suffix(
+        "NSObject",
+        "RSTAppDelegate",
+        should_generate_suffix,
+        |decl| unsafe {
+            // Launching Applications
+            decl.add_method(
+                sel!(application:didFinishLaunchingWithOptions:),
+                did_finish_launching::<T> as extern "C" fn(_, _, _, _) -> _,
+            );
 
-        // Scenes
-        decl.add_method(
-            sel!(application:configurationForConnectingSceneSession:options:),
-            configuration_for_scene_session::<T> as extern "C" fn(_, _, _, _, _) -> _
-        );
-        /*decl.add_method(
-            sel!(application:didDiscardSceneSessions:),
-            did_discard_scene_sessions::<T> as extern "C" fn(_, _, _, _)
-        );*/
-    })
+            // Scenes
+            decl.add_method(
+                sel!(application:configurationForConnectingSceneSession:options:),
+                configuration_for_scene_session::<T> as extern "C" fn(_, _, _, _, _) -> _,
+            );
+            /*decl.add_method(
+                sel!(application:didDiscardSceneSessions:),
+                did_discard_scene_sessions::<T> as extern "C" fn(_, _, _, _)
+            );*/
+        },
+    )
 }

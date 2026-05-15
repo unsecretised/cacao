@@ -2,7 +2,10 @@ use std::sync::RwLock;
 
 use cacao::input::{TextField, TextFieldDelegate};
 use cacao::text::{Label, TextAlign};
-use cacao::uikit::{App, AppDelegate, Scene, SceneConfig, SceneConnectionOptions, SceneSession, Window, WindowSceneDelegate};
+use cacao::uikit::{
+    App, AppDelegate, Scene, SceneConfig, SceneConnectionOptions, SceneSession, Window,
+    WindowSceneDelegate,
+};
 
 use cacao::color::Color;
 use cacao::image::{Image, ImageView};
@@ -13,7 +16,11 @@ use cacao::view::{View, ViewController, ViewDelegate};
 struct TestApp;
 
 impl AppDelegate for TestApp {
-    fn config_for_scene_session(&self, session: SceneSession, _options: SceneConnectionOptions) -> SceneConfig {
+    fn config_for_scene_session(
+        &self,
+        session: SceneSession,
+        _options: SceneConnectionOptions,
+    ) -> SceneConfig {
         SceneConfig::new("Default Configuration", session.role())
     }
 }
@@ -47,7 +54,7 @@ pub struct RootView {
     pub blue: View,
     pub label: Label,
     pub image: ImageView,
-    pub input: TextField<ConsoleLogger>
+    pub input: TextField<ConsoleLogger>,
 }
 
 impl Default for RootView {
@@ -57,7 +64,7 @@ impl Default for RootView {
             blue: View::new(),
             label: Label::new(),
             image: ImageView::new(),
-            input: TextField::with(ConsoleLogger("input_1".to_string()))
+            input: TextField::with(ConsoleLogger("input_1".to_string())),
         }
     }
 }
@@ -89,22 +96,53 @@ impl ViewDelegate for RootView {
         view.add_subview(&self.input);
 
         LayoutConstraint::activate(&[
-            self.label.leading.constraint_equal_to(&view.leading).offset(16.),
+            self.label
+                .leading
+                .constraint_equal_to(&view.leading)
+                .offset(16.),
             self.label.top.constraint_equal_to(&view.top).offset(16.),
             self.label.height.constraint_equal_to_constant(100.),
-            self.label.trailing.constraint_equal_to(&view.trailing).offset(-16.),
-            self.green.top.constraint_equal_to(&self.label.bottom).offset(16.),
-            self.green.leading.constraint_equal_to(&view.leading).offset(16.),
-            self.green.trailing.constraint_equal_to(&view.trailing).offset(-16.),
+            self.label
+                .trailing
+                .constraint_equal_to(&view.trailing)
+                .offset(-16.),
+            self.green
+                .top
+                .constraint_equal_to(&self.label.bottom)
+                .offset(16.),
+            self.green
+                .leading
+                .constraint_equal_to(&view.leading)
+                .offset(16.),
+            self.green
+                .trailing
+                .constraint_equal_to(&view.trailing)
+                .offset(-16.),
             self.green.height.constraint_equal_to_constant(120.),
-            self.input.center_x.constraint_equal_to(&self.green.center_x),
-            self.input.center_y.constraint_equal_to(&self.green.center_y),
-            self.blue.top.constraint_equal_to(&self.green.bottom).offset(16.),
-            self.blue.leading.constraint_equal_to(&view.leading).offset(16.),
-            self.blue.trailing.constraint_equal_to(&view.trailing).offset(-16.),
-            self.blue.bottom.constraint_equal_to(&view.bottom).offset(-16.),
+            self.input
+                .center_x
+                .constraint_equal_to(&self.green.center_x),
+            self.input
+                .center_y
+                .constraint_equal_to(&self.green.center_y),
+            self.blue
+                .top
+                .constraint_equal_to(&self.green.bottom)
+                .offset(16.),
+            self.blue
+                .leading
+                .constraint_equal_to(&view.leading)
+                .offset(16.),
+            self.blue
+                .trailing
+                .constraint_equal_to(&view.trailing)
+                .offset(-16.),
+            self.blue
+                .bottom
+                .constraint_equal_to(&view.bottom)
+                .offset(-16.),
             self.image.center_x.constraint_equal_to(&self.blue.center_x),
-            self.image.center_y.constraint_equal_to(&self.blue.center_y)
+            self.image.center_y.constraint_equal_to(&self.blue.center_y),
         ]);
     }
 }
@@ -112,7 +150,7 @@ impl ViewDelegate for RootView {
 #[derive(Default)]
 pub struct WindowScene {
     pub window: RwLock<Option<Window>>,
-    pub root_view_controller: RwLock<Option<ViewController<RootView>>>
+    pub root_view_controller: RwLock<Option<ViewController<RootView>>>,
 }
 
 impl WindowSceneDelegate for WindowScene {

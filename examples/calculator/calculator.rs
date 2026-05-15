@@ -16,7 +16,7 @@ pub enum Msg {
     Clear,
     Mod,
     Invert,
-    Equals
+    Equals,
 }
 
 /// Asynchronously calls back through to the top of the application
@@ -46,17 +46,27 @@ impl Calculator {
                 // Realistically you might want to check decimal length here or something.
                 // We're not bothering for this example.
                 (*expression).push(i.to_string());
-                let display = (*expression).join("").split(" ").last().unwrap_or("0").to_string();
+                let display = (*expression)
+                    .join("")
+                    .split(" ")
+                    .last()
+                    .unwrap_or("0")
+                    .to_string();
                 App::<CalculatorApp, String>::dispatch_main(display);
-            },
+            }
 
             Msg::Decimal => {
-                let display = (*expression).join("").split(" ").last().unwrap_or("0").to_string();
+                let display = (*expression)
+                    .join("")
+                    .split(" ")
+                    .last()
+                    .unwrap_or("0")
+                    .to_string();
                 if !display.contains(".") {
                     (*expression).push(".".to_string());
                     App::<CalculatorApp, String>::dispatch_main(display + ".");
                 }
-            },
+            }
 
             Msg::Add => {
                 if let Some(last_entry) = (*expression).last() {
@@ -64,24 +74,24 @@ impl Calculator {
                         (*expression).push(" + ".to_string());
                     }
                 }
-            },
+            }
 
             Msg::Subtract => {
                 (*expression).push(" - ".to_string());
-            },
+            }
 
             Msg::Multiply => {
                 (*expression).push(" * ".to_string());
-            },
+            }
 
             Msg::Divide => {
                 (*expression).push(" / ".to_string());
-            },
+            }
 
             Msg::Clear => {
                 (*expression) = Vec::new();
                 App::<CalculatorApp, String>::dispatch_main("0".to_string())
-            },
+            }
 
             Msg::Equals => {
                 let mut expr = (*expression).join("");
@@ -94,12 +104,12 @@ impl Calculator {
                 match eval::eval(&expr) {
                     Ok(val) => {
                         App::<CalculatorApp, String>::dispatch_main(val.to_string());
-                    },
+                    }
                     Err(e) => {
                         eprintln!("Error parsing expression: {:?}", e);
                     }
                 }
-            },
+            }
 
             _ => {}
         }

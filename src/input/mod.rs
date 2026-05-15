@@ -51,7 +51,7 @@ use objc::{class, msg_send, sel};
 
 use crate::color::Color;
 use crate::control::Control;
-use crate::foundation::{id, nil, NSArray, NSInteger, NSString, NO, YES};
+use crate::foundation::{NO, NSArray, NSInteger, NSString, YES, id, nil};
 use crate::layout::Layout;
 use crate::objc_access::ObjcAccess;
 use crate::text::{Font, TextAlign};
@@ -140,7 +140,7 @@ pub struct TextField<T = ()> {
 
     /// A pointer to the Objective-C runtime center Y layout constraint.
     #[cfg(feature = "autolayout")]
-    pub center_y: LayoutAnchorY
+    pub center_y: LayoutAnchorY,
 }
 
 impl Default for TextField {
@@ -187,14 +187,14 @@ impl TextField {
             center_x: LayoutAnchorX::center(view),
 
             #[cfg(feature = "autolayout")]
-            center_y: LayoutAnchorY::center(view)
+            center_y: LayoutAnchorY::center(view),
         }
     }
 }
 
 impl<T> TextField<T>
 where
-    T: TextFieldDelegate + 'static
+    T: TextFieldDelegate + 'static,
 {
     /// Initializes a new TextField with a given `TextFieldDelegate`. This enables you to respond to events
     /// and customize the view as a module, similar to class-based systems.
@@ -242,7 +242,7 @@ where
             center_x: LayoutAnchorX::center(input),
 
             #[cfg(feature = "autolayout")]
-            center_y: LayoutAnchorY::center(input)
+            center_y: LayoutAnchorY::center(input),
         };
 
         (&mut delegate).did_load(input.clone_as_handle());
@@ -289,7 +289,7 @@ impl<T> TextField<T> {
             center_x: self.center_x.clone(),
 
             #[cfg(feature = "autolayout")]
-            center_y: self.center_y.clone()
+            center_y: self.center_y.clone(),
         }
     }
 

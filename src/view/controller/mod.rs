@@ -6,7 +6,7 @@ use crate::foundation::id;
 use crate::layout::Layout;
 use crate::objc_access::ObjcAccess;
 use crate::utils::Controller;
-use crate::view::{View, ViewDelegate, VIEW_DELEGATE_PTR};
+use crate::view::{VIEW_DELEGATE_PTR, View, ViewDelegate};
 
 #[cfg_attr(feature = "appkit", path = "appkit.rs")]
 #[cfg_attr(feature = "uikit", path = "uikit.rs")]
@@ -40,12 +40,12 @@ pub struct ViewController<T> {
     pub objc: Id<Object, Shared>,
 
     /// The underlying View that we manage.
-    pub view: View<T>
+    pub view: View<T>,
 }
 
 impl<T> ViewController<T>
 where
-    T: ViewDelegate + 'static
+    T: ViewDelegate + 'static,
 {
     /// Creates and returns a new `ViewController` with the provided `delegate`.
     pub fn new(delegate: T) -> Self {

@@ -2,10 +2,10 @@ use std::collections::HashMap;
 
 use objc::{
     rc::{Id, Owned, Shared},
-    runtime::Object
+    runtime::Object,
 };
 
-use crate::foundation::{id, NSData, NSMutableDictionary, NSNumber, NSString};
+use crate::foundation::{NSData, NSMutableDictionary, NSNumber, NSString, id};
 
 /// Represents a Value that can be stored or queried with `UserDefaults`.
 ///
@@ -28,7 +28,7 @@ pub enum Value {
 
     /// Represents Data (bytes). You can use this to store arbitrary things that aren't supported
     /// above. You're responsible for moving things back and forth to the necessary types.
-    Data(Vec<u8>)
+    Data(Vec<u8>),
 }
 
 impl Value {
@@ -41,7 +41,7 @@ impl Value {
     pub fn is_boolean(&self) -> bool {
         match self {
             Value::Bool(_) => true,
-            _ => false
+            _ => false,
         }
     }
 
@@ -49,7 +49,7 @@ impl Value {
     pub fn as_bool(&self) -> Option<bool> {
         match self {
             Value::Bool(v) => Some(*v),
-            _ => None
+            _ => None,
         }
     }
 
@@ -57,7 +57,7 @@ impl Value {
     pub fn is_string(&self) -> bool {
         match self {
             Value::String(_) => true,
-            _ => false
+            _ => false,
         }
     }
 
@@ -65,7 +65,7 @@ impl Value {
     pub fn as_str(&self) -> Option<&str> {
         match self {
             Value::String(s) => Some(s),
-            _ => None
+            _ => None,
         }
     }
 
@@ -73,7 +73,7 @@ impl Value {
     pub fn is_integer(&self) -> bool {
         match self {
             Value::Integer(_) => true,
-            _ => false
+            _ => false,
         }
     }
 
@@ -81,7 +81,7 @@ impl Value {
     pub fn as_i32(&self) -> Option<i32> {
         match self {
             Value::Integer(i) => Some(*i as i32),
-            _ => None
+            _ => None,
         }
     }
 
@@ -89,7 +89,7 @@ impl Value {
     pub fn as_i64(&self) -> Option<i64> {
         match self {
             Value::Integer(i) => Some(*i as i64),
-            _ => None
+            _ => None,
         }
     }
 
@@ -97,7 +97,7 @@ impl Value {
     pub fn is_float(&self) -> bool {
         match self {
             Value::Float(_) => true,
-            _ => false
+            _ => false,
         }
     }
 
@@ -105,7 +105,7 @@ impl Value {
     pub fn as_f32(&self) -> Option<f32> {
         match self {
             Value::Float(f) => Some(*f as f32),
-            _ => None
+            _ => None,
         }
     }
 
@@ -113,7 +113,7 @@ impl Value {
     pub fn as_f64(&self) -> Option<f64> {
         match self {
             Value::Float(f) => Some(*f as f64),
-            _ => None
+            _ => None,
         }
     }
 
@@ -121,7 +121,7 @@ impl Value {
     pub fn is_data(&self) -> bool {
         match self {
             Value::Data(_) => true,
-            _ => false
+            _ => false,
         }
     }
 
@@ -130,7 +130,7 @@ impl Value {
     pub fn as_data(&self) -> Option<&[u8]> {
         match self {
             Value::Data(data) => Some(data),
-            _ => None
+            _ => None,
         }
     }
 
@@ -143,14 +143,14 @@ impl Value {
             Value::String(s) => NSString::new(&s).objc,
             Value::Float(f) => NSNumber::float(f).0,
             Value::Integer(i) => NSNumber::integer(i).0,
-            Value::Data(data) => NSData::new(data).0
+            Value::Data(data) => NSData::new(data).0,
         }
     }
 }
 
 impl<K> From<HashMap<K, Value>> for NSMutableDictionary
 where
-    K: AsRef<str>
+    K: AsRef<str>,
 {
     /// Translates a `HashMap` of `Value`s into an `NSDictionary`.
     fn from(map: HashMap<K, Value>) -> Self {

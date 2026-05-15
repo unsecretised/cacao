@@ -42,7 +42,11 @@ pub trait AppDelegate {
     /// Fired when data for continuing an activity is available. Currently, the
     /// `restoration_handler` is not used, but there to communicate intent with what this API will
     /// eventually be doing.
-    fn continue_user_activity<F: Fn()>(&self, _activity: UserActivity, _restoration_handler: F) -> bool {
+    fn continue_user_activity<F: Fn()>(
+        &self,
+        _activity: UserActivity,
+        _restoration_handler: F,
+    ) -> bool {
         false
     }
 
@@ -213,7 +217,12 @@ pub trait AppDelegate {
     /// Note that macOS has a long-deprecated `printFiles:` method, which your searching may bring
     /// up. This method really maps to `application:printFiles:withSettings:showPrintPanels:`, so
     /// be sure to just... look there.
-    fn print_files(&self, _filenames: Vec<String>, _settings: PrintSettings, _show_panels: bool) -> PrintResponse {
+    fn print_files(
+        &self,
+        _filenames: Vec<String>,
+        _settings: PrintSettings,
+        _show_panels: bool,
+    ) -> PrintResponse {
         PrintResponse::Failure
     }
 

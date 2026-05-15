@@ -2,7 +2,7 @@ use objc::rc::{Id, Owned};
 use objc::runtime::Object;
 use objc::{msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, NSString};
+use crate::foundation::{NSString, id};
 use crate::uikit::scene::enums::SessionRole;
 
 #[derive(Debug)]

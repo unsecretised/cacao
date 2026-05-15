@@ -28,7 +28,7 @@ use objc::rc::{Id, Owned};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, NSString};
+use crate::foundation::{NSString, id};
 
 /// Represents an `NSAlert`. Has no information other than the retained pointer to the Objective C
 /// side, so... don't bother inspecting this.

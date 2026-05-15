@@ -8,7 +8,7 @@ use objc::rc::{Id, Shared};
 use objc::runtime::Object;
 use objc::{class, msg_send, sel};
 
-use crate::foundation::{id, NO, YES};
+use crate::foundation::{NO, YES, id};
 
 #[cfg(all(feature = "appkit", target_os = "macos"))]
 use super::LayoutConstraintAnimatorProxy;
@@ -34,7 +34,7 @@ pub struct LayoutConstraint {
     /// An animator proxy that can be used inside animation contexts.
     /// This is currently only supported on macOS with the `appkit` feature.
     #[cfg(all(feature = "appkit", target_os = "macos"))]
-    pub animator: LayoutConstraintAnimatorProxy
+    pub animator: LayoutConstraintAnimatorProxy,
 }
 
 impl LayoutConstraint {
@@ -46,7 +46,7 @@ impl LayoutConstraint {
             constraint: unsafe { Id::retain(object).unwrap() },
             offset: 0.0,
             multiplier: 0.0,
-            priority: 0.0
+            priority: 0.0,
         }
     }
 
@@ -65,7 +65,7 @@ impl LayoutConstraint {
             constraint: self.constraint,
             offset: offset,
             multiplier: self.multiplier,
-            priority: self.priority
+            priority: self.priority,
         }
     }
 
@@ -100,17 +100,25 @@ impl LayoutConstraint {
     //
     // I regret nothing, lol. If you have a better solution I'm all ears.
     pub fn activate(constraints: &[LayoutConstraint]) {
-        let ids: Vec<&Object> = constraints.into_iter().map(|constraint| &*constraint.constraint).collect();
+        let ids: Vec<&Object> = constraints
+            .into_iter()
+            .map(|constraint| &*constraint.constraint)
+            .collect();
         unsafe {
-            let constraints: id = msg_send![class!(NSArray), arrayWithObjects:ids.as_ptr() count:ids.len()];
+            let constraints: id =
+                msg_send![class!(NSArray), arrayWithObjects:ids.as_ptr() count:ids.len()];
             let _: () = msg_send![class!(NSLayoutConstraint), activateConstraints: constraints];
         }
     }
 
     pub fn deactivate(constraints: &[LayoutConstraint]) {
-        let ids: Vec<&Object> = constraints.into_iter().map(|constraint| &*constraint.constraint).collect();
+        let ids: Vec<&Object> = constraints
+            .into_iter()
+            .map(|constraint| &*constraint.constraint)
+            .collect();
         unsafe {
-            let constraints: id = msg_send![class!(NSArray), arrayWithObjects:ids.as_ptr() count:ids.len()];
+            let constraints: id =
+                msg_send![class!(NSArray), arrayWithObjects:ids.as_ptr() count:ids.len()];
             let _: () = msg_send![class!(NSLayoutConstraint), deactivateConstraints: constraints];
         }
     }

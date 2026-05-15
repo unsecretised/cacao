@@ -13,8 +13,8 @@ use objc::{msg_send, sel};
 
 use crate::appkit::menu::Menu;
 use crate::dragdrop::DragInfo;
-use crate::foundation::{id, load_or_register_class, NSArray, NSInteger, NSUInteger};
-use crate::listview::{ListViewDelegate, RowEdge, LISTVIEW_DELEGATE_PTR};
+use crate::foundation::{NSArray, NSInteger, NSUInteger, id, load_or_register_class};
+use crate::listview::{LISTVIEW_DELEGATE_PTR, ListViewDelegate, RowEdge};
 use crate::utils::load;
 
 /// Determines the number of items by way of the backing data source (the Rust struct).
@@ -28,7 +28,7 @@ extern "C" fn view_for_column<T: ListViewDelegate>(
     _: Sel,
     _table_view: id,
     _table_column: id,
-    item: NSInteger
+    item: NSInteger,
 ) -> id {
     /*use core_graphics::geometry::CGRect;
     unsafe {
@@ -58,7 +58,7 @@ extern "C" fn will_display_cell<T: ListViewDelegate>(
     _table_view: id,
     _cell: id,
     _column: id,
-    item: NSInteger
+    item: NSInteger,
 ) {
     let view = load::<T>(this, LISTVIEW_DELEGATE_PTR);
     view.will_display_item(item as usize);
@@ -106,7 +106,7 @@ extern "C" fn row_actions_for_row<T: ListViewDelegate>(
     _: Sel,
     _table_view: id,
     row: NSInteger,
-    edge: NSInteger
+    edge: NSInteger,
 ) -> id {
     let edge: RowEdge = edge.into();
     let view = load::<T>(this, LISTVIEW_DELEGATE_PTR);
@@ -127,29 +127,41 @@ extern "C" fn enforce_normalcy(_: &Object, _: Sel) -> Bool {
 }
 
 /// Called when a drag/drop operation has entered this view.
-extern "C" fn dragging_entered<T: ListViewDelegate>(this: &mut Object, _: Sel, info: id) -> NSUInteger {
+extern "C" fn dragging_entered<T: ListViewDelegate>(
+    this: &mut Object,
+    _: Sel,
+    info: id,
+) -> NSUInteger {
     let view = load::<T>(this, LISTVIEW_DELEGATE_PTR);
     view.dragging_entered(DragInfo {
-        info: unsafe { Id::retain(info).unwrap() }
+        info: unsafe { Id::retain(info).unwrap() },
     })
     .into()
 }
 
 /// Called when a drag/drop operation has entered this view.
-extern "C" fn prepare_for_drag_operation<T: ListViewDelegate>(this: &mut Object, _: Sel, info: id) -> Bool {
+extern "C" fn prepare_for_drag_operation<T: ListViewDelegate>(
+    this: &mut Object,
+    _: Sel,
+    info: id,
+) -> Bool {
     let view = load::<T>(this, LISTVIEW_DELEGATE_PTR);
 
     Bool::new(view.prepare_for_drag_operation(DragInfo {
-        info: unsafe { Id::retain(info).unwrap() }
+        info: unsafe { Id::retain(info).unwrap() },
     }))
 }
 
 /// Called when a drag/drop operation has entered this view.
-extern "C" fn perform_drag_operation<T: ListViewDelegate>(this: &mut Object, _: Sel, info: id) -> Bool {
+extern "C" fn perform_drag_operation<T: ListViewDelegate>(
+    this: &mut Object,
+    _: Sel,
+    info: id,
+) -> Bool {
     let view = load::<T>(this, LISTVIEW_DELEGATE_PTR);
 
     Bool::new(view.perform_drag_operation(DragInfo {
-        info: unsafe { Id::retain(info).unwrap() }
+        info: unsafe { Id::retain(info).unwrap() },
     }))
 }
 
@@ -158,7 +170,7 @@ extern "C" fn conclude_drag_operation<T: ListViewDelegate>(this: &mut Object, _:
     let view = load::<T>(this, LISTVIEW_DELEGATE_PTR);
 
     view.conclude_drag_operation(DragInfo {
-        info: unsafe { Id::retain(info).unwrap() }
+        info: unsafe { Id::retain(info).unwrap() },
     });
 }
 
@@ -167,7 +179,7 @@ extern "C" fn dragging_exited<T: ListViewDelegate>(this: &mut Object, _: Sel, in
     let view = load::<T>(this, LISTVIEW_DELEGATE_PTR);
 
     view.dragging_exited(DragInfo {
-        info: unsafe { Id::retain(info).unwrap() }
+        info: unsafe { Id::retain(info).unwrap() },
     });
 }
 
@@ -176,60 +188,74 @@ extern "C" fn dragging_exited<T: ListViewDelegate>(this: &mut Object, _: Sel, in
 /// `UITableView` semantics; if `NSTableView`'s multi column behavior is needed, then it can
 /// be added in.
 pub(crate) fn register_listview_class() -> &'static Class {
-    load_or_register_class("NSTableView", "RSTListView", |decl| unsafe {})
+    load_or_register_class("NSTableView", "RSTListView", |_decl| {})
 }
 
 /// Injects an `NSTableView` subclass, with some callback and pointer ivars for what we
 /// need to do. Note that we treat and constrain this as a one-column "list" view to match
 /// `UITableView` semantics; if `NSTableView`'s multi column behavior is needed, then it can
 /// be added in.
-pub(crate) fn register_listview_class_with_delegate<T: ListViewDelegate>(instance: &T) -> &'static Class {
+pub(crate) fn register_listview_class_with_delegate<T: ListViewDelegate>(
+    instance: &T,
+) -> &'static Class {
     load_or_register_class("NSTableView", instance.subclass_name(), |decl| unsafe {
         decl.add_ivar::<usize>(LISTVIEW_DELEGATE_PTR);
 
-        decl.add_method(sel!(isFlipped), enforce_normalcy as extern "C" fn(_, _) -> _);
+        decl.add_method(
+            sel!(isFlipped),
+            enforce_normalcy as extern "C" fn(_, _) -> _,
+        );
 
         // Tableview-specific
         decl.add_method(
             sel!(numberOfRowsInTableView:),
-            number_of_items::<T> as extern "C" fn(_, _, _) -> _
+            number_of_items::<T> as extern "C" fn(_, _, _) -> _,
         );
         decl.add_method(
             sel!(tableView:willDisplayCell:forTableColumn:row:),
-            will_display_cell::<T> as extern "C" fn(_, _, _, _, _, _)
+            will_display_cell::<T> as extern "C" fn(_, _, _, _, _, _),
         );
         decl.add_method(
             sel!(tableView:viewForTableColumn:row:),
-            view_for_column::<T> as extern "C" fn(_, _, _, _, _) -> _
+            view_for_column::<T> as extern "C" fn(_, _, _, _, _) -> _,
         );
         decl.add_method(
             sel!(tableViewSelectionDidChange:),
-            selection_did_change::<T> as extern "C" fn(_, _, _)
+            selection_did_change::<T> as extern "C" fn(_, _, _),
         );
         decl.add_method(
             sel!(tableView:rowActionsForRow:edge:),
-            row_actions_for_row::<T> as extern "C" fn(_, _, _, _, _) -> _
+            row_actions_for_row::<T> as extern "C" fn(_, _, _, _, _) -> _,
         );
 
         // A slot for some menu handling; we just let it be done here for now rather than do the
         // whole delegate run, since things are fast enough nowadays to just replace the entire
         // menu.
-        decl.add_method(sel!(menuNeedsUpdate:), menu_needs_update::<T> as extern "C" fn(_, _, _));
+        decl.add_method(
+            sel!(menuNeedsUpdate:),
+            menu_needs_update::<T> as extern "C" fn(_, _, _),
+        );
 
         // Drag and drop operations (e.g, accepting files)
-        decl.add_method(sel!(draggingEntered:), dragging_entered::<T> as extern "C" fn(_, _, _) -> _);
+        decl.add_method(
+            sel!(draggingEntered:),
+            dragging_entered::<T> as extern "C" fn(_, _, _) -> _,
+        );
         decl.add_method(
             sel!(prepareForDragOperation:),
-            prepare_for_drag_operation::<T> as extern "C" fn(_, _, _) -> _
+            prepare_for_drag_operation::<T> as extern "C" fn(_, _, _) -> _,
         );
         decl.add_method(
             sel!(performDragOperation:),
-            perform_drag_operation::<T> as extern "C" fn(_, _, _) -> _
+            perform_drag_operation::<T> as extern "C" fn(_, _, _) -> _,
         );
         decl.add_method(
             sel!(concludeDragOperation:),
-            conclude_drag_operation::<T> as extern "C" fn(_, _, _)
+            conclude_drag_operation::<T> as extern "C" fn(_, _, _),
         );
-        decl.add_method(sel!(draggingExited:), dragging_exited::<T> as extern "C" fn(_, _, _));
+        decl.add_method(
+            sel!(draggingExited:),
+            dragging_exited::<T> as extern "C" fn(_, _, _),
+        );
     })
 }

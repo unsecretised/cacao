@@ -19,7 +19,7 @@ pub enum LayoutAnchorY {
     Bottom(Id<Object, Shared>),
 
     /// Represents a center anchor for the Y axis.
-    Center(Id<Object, Shared>)
+    Center(Id<Object, Shared>),
 }
 
 impl Default for LayoutAnchorY {
@@ -49,7 +49,7 @@ impl LayoutAnchorY {
     /// wrong.
     fn constraint_with<F>(&self, anchor_to: &LayoutAnchorY, handler: F) -> LayoutConstraint
     where
-        F: Fn(&Id<Object, Shared>, &Id<Object, Shared>) -> id
+        F: Fn(&Id<Object, Shared>, &Id<Object, Shared>) -> id,
     {
         match (self, anchor_to) {
             (Self::Top(from), Self::Top(to))
@@ -63,12 +63,14 @@ impl LayoutAnchorY {
             | (Self::Center(from), Self::Bottom(to)) => LayoutConstraint::new(handler(from, to)),
 
             (Self::Uninitialized, Self::Uninitialized) => {
-                panic!("Attempted to create constraints with uninitialized \"from\" and \"to\" y anchors.");
-            },
+                panic!(
+                    "Attempted to create constraints with uninitialized \"from\" and \"to\" y anchors."
+                );
+            }
 
             (Self::Uninitialized, _) => {
                 panic!("Attempted to create constraints with an uninitialized \"from\" y anchor.");
-            },
+            }
 
             (_, Self::Uninitialized) => {
                 panic!("Attempted to create constraints with an uninitialized \"to\" y anchor.");
@@ -84,7 +86,10 @@ impl LayoutAnchorY {
     }
 
     /// Return a constraint greater than or equal to another vertical anchor.
-    pub fn constraint_greater_than_or_equal_to(&self, anchor_to: &LayoutAnchorY) -> LayoutConstraint {
+    pub fn constraint_greater_than_or_equal_to(
+        &self,
+        anchor_to: &LayoutAnchorY,
+    ) -> LayoutConstraint {
         self.constraint_with(anchor_to, |from, to| unsafe {
             msg_send![from, constraintGreaterThanOrEqualToAnchor:&**to]
         })

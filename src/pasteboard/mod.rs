@@ -21,7 +21,7 @@ use objc::{class, msg_send, msg_send_id, sel};
 use url::Url;
 
 use crate::error::Error;
-use crate::foundation::{id, nil, NSArray, NSString, NSURL};
+use crate::foundation::{NSArray, NSString, NSURL, id, nil};
 
 mod types;
 pub use types::{PasteboardName, PasteboardType};
@@ -87,7 +87,7 @@ impl Pasteboard {
     /// _Note that this method returns a list of `Url` entities, in an attempt to be closer to how
     /// Cocoa & co operate. This method may go away in the future if it's determined that people
     /// wind up just using `get_file_paths()`._
-    pub fn get_file_urls(&self) -> Result<Vec<NSURL>, Box<dyn std::error::Error>> {
+    pub fn get_file_urls(&self) -> Result<Vec<NSURL<'_>>, Box<dyn std::error::Error>> {
         unsafe {
             let class: id = msg_send![class!(NSURL), class];
             let classes = NSArray::new(&[class]);
@@ -102,11 +102,14 @@ impl Pasteboard {
                 return Err(Box::new(Error {
                     code: 666,
                     domain: "com.cacao-rs.pasteboard".to_string(),
-                    description: "Pasteboard server returned no data.".to_string()
+                    description: "Pasteboard server returned no data.".to_string(),
                 }));
             }
 
-            let urls = NSArray::retain(contents).iter().map(|url| NSURL::retain(url)).collect();
+            let urls = NSArray::retain(contents)
+                .iter()
+                .map(|url| NSURL::retain(url))
+                .collect();
 
             Ok(urls)
         }

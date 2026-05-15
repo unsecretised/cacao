@@ -5,7 +5,9 @@
 
 use std::sync::RwLock;
 
-use cacao::appkit::window::{Window, WindowConfig, WindowDelegate, WindowStyle, WindowToolbarStyle};
+use cacao::appkit::window::{
+    Window, WindowConfig, WindowDelegate, WindowStyle, WindowToolbarStyle,
+};
 use cacao::notification_center::Dispatcher;
 
 use crate::storage::Message;
@@ -18,7 +20,7 @@ use crate::todos::TodosWindow;
 pub struct WindowManager {
     pub main: RwLock<Option<Window<TodosWindow>>>,
     pub preferences: RwLock<Option<Window<PreferencesWindow>>>,
-    pub add: RwLock<Option<Window<AddNewTodoWindow>>>
+    pub add: RwLock<Option<Window<AddNewTodoWindow>>>,
 }
 
 /// A helper method to handle checking for window existence, and creating
@@ -26,7 +28,7 @@ pub struct WindowManager {
 fn open_or_show<T, F>(window: &RwLock<Option<Window<T>>>, vendor: F)
 where
     T: WindowDelegate + 'static,
-    F: Fn() -> (WindowConfig, T)
+    F: Fn() -> (WindowConfig, T),
 {
     let mut lock = window.write().unwrap();
 
@@ -50,7 +52,7 @@ impl WindowManager {
     pub fn begin_sheet<W, F>(&self, window: &Window<W>, completion: F)
     where
         W: WindowDelegate + 'static,
-        F: Fn() + Send + Sync + 'static
+        F: Fn() + Send + Sync + 'static,
     {
         let main = self.main.write().unwrap();
 
@@ -101,7 +103,7 @@ impl WindowManager {
                 WindowStyle::Resizable,
                 WindowStyle::Miniaturizable,
                 WindowStyle::Closable,
-                WindowStyle::Titled
+                WindowStyle::Titled,
             ]);
 
             config.toolbar_style = WindowToolbarStyle::Preferences;
@@ -119,23 +121,23 @@ impl Dispatcher for WindowManager {
         match message {
             Message::OpenMainWindow => {
                 self.open_main();
-            },
+            }
 
             Message::OpenPreferencesWindow => {
                 self.open_preferences();
-            },
+            }
 
             Message::CloseSheet => {
                 self.close_sheet();
-            },
+            }
 
             Message::OpenNewTodoSheet => {
                 self.open_add();
-            },
+            }
 
             Message::StoreNewTodo(_) => {
                 self.close_sheet();
-            },
+            }
 
             _ => {}
         }

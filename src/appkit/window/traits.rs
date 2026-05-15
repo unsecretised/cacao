@@ -97,7 +97,11 @@ pub trait WindowDelegate {
     /// Fires when the system is moving a window to full screen and wants to know what content size
     /// to use. By default, this just returns the system-provided content size, but you can
     /// override it if need be.
-    fn content_size_for_full_screen(&self, proposed_width: f64, proposed_height: f64) -> (f64, f64) {
+    fn content_size_for_full_screen(
+        &self,
+        proposed_width: f64,
+        proposed_height: f64,
+    ) -> (f64, f64) {
         (proposed_width, proposed_height)
     }
 

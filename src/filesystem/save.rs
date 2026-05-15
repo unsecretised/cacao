@@ -8,7 +8,7 @@ use objc::rc::{Id, Shared};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{id, nil, NSInteger, NSString, NO, YES};
+use crate::foundation::{NO, NSInteger, NSString, YES, id, nil};
 
 #[derive(Debug)]
 pub struct FileSavePanel {
@@ -19,7 +19,7 @@ pub struct FileSavePanel {
     pub delegate: Id<Object, Shared>,
 
     /// Whether the user can choose files. Defaults to `true`.
-    pub can_create_directories: bool
+    pub can_create_directories: bool,
 }
 
 impl Default for FileSavePanel {
@@ -40,7 +40,7 @@ impl FileSavePanel {
 
             delegate: unsafe { msg_send_id![class!(NSObject), new] },
 
-            can_create_directories: true
+            can_create_directories: true,
         }
     }
 
