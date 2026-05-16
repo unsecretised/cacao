@@ -6,7 +6,7 @@ use std::ffi::c_void;
 use std::ptr::null;
 use std::sync::Once;
 
-use block::Block;
+use block2::Block;
 
 use objc::declare::ClassDecl;
 use objc::runtime::{Bool, Class, Object, Sel};

@@ -3,7 +3,7 @@ use objc::runtime::{Bool, Class, Object};
 
 use objc::{class, msg_send, msg_send_id, sel};
 
-use block::ConcreteBlock;
+use block2::ConcreteBlock;
 
 use core_graphics::context::{CGContext, CGContextRef};
 use core_graphics::{

@@ -1,5 +1,5 @@
 [package]
-name = "cacao-rs"
+name = "cacao"
 description = "Rust bindings for AppKit (macOS/Airyx/GNUStep, beta) and UIKit (iOS/tvOS, alpha)."
 version = "0.4.0-beta2"
 edition = "2024"
@@ -15,30 +15,28 @@ maintenance = { status = "actively-developed" }
 
 [package.metadata.docs.rs]
 all-features = true
-default-target = "x86_64-apple-darwin"
+default-target = "aarch64-apple-darwin"
 rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
 bitmask-enum = "2.2.1"
-objc = { version = "=0.3.0-beta.2", package = "objc2" }
-block = { version = "=0.2.0-alpha.6", package = "block2" }
-# Temporary: Patched versions that implement `Encode` for common types
-# Branch: `objc2`
-core-foundation = { git = "https://github.com/madsmtm/core-foundation-rs.git", rev = "7d593d016175755e492a92ef89edca68ac3bd5cd" }
-core-graphics = { git = "https://github.com/madsmtm/core-foundation-rs.git", rev = "7d593d016175755e492a92ef89edca68ac3bd5cd" }
-dispatch = "0.2.0"
 infer = { version = "0.15", optional = true }
 lazy_static = "1.4.0"
 libc = "0.2"
 os_info = "3.0.1"
 url = "2.1.1"
 uuid = { version = "1.1", features = ["v4"], optional = true }
+block2 = "0.6.2"
+dispatch2 = "0.3.1"
+objc2-core-foundation = "0.3.2"
+objc2-core-graphics = "0.3.2"
+objc2 = "0.6.4"
 
 [dev-dependencies]
 eval = "0.4"
 
 [features]
-appkit = ["core-foundation/mac_os_10_8_features"]
+appkit = []
 uikit = []
 autolayout = []
 default = ["appkit", "autolayout"]

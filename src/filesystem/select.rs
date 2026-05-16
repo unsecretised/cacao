@@ -4,7 +4,7 @@
 
 use std::path::PathBuf;
 
-use block::ConcreteBlock;
+use block2::ConcreteBlock;
 
 use objc::rc::{Id, Shared};
 use objc::runtime::Object;

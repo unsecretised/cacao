@@ -9,7 +9,7 @@ conduct](https://github.com/ryanmcgrath/cacao/blob/trunk/code_of_conduct.md).
 
 ## Submitting bug reports
 
-Have a look at the [issue tracker](https://github.com/ryanmcgrath/cacao/issues). If you can't find an issue (open or closed)
+Have a look at the [issue tracker](https://github.com/unsecretised/cacao-rs/issues). If you can't find an issue (open or closed)
 describing your problem (or a very similar one) there, please open a new issue with
 the following details:
 

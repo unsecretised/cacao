@@ -2,7 +2,7 @@
 //! It currently doesn't implement _everything_ necessary, but it's functional
 //! enough for general use.
 
-use block::ConcreteBlock;
+use block2::ConcreteBlock;
 
 use objc::rc::{Id, Shared};
 use objc::runtime::Object;

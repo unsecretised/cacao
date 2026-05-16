@@ -4,7 +4,7 @@
 //!
 //! If you use that feature, there are no guarantees you'll be accepted into the App Store.
 
-use block::Block;
+use block2::Block;
 use cocoa::foundation::{NSArray, NSInteger, NSPoint, NSRect, NSSize, NSString};
 use objc::declare::ClassDecl;
 use objc::runtime::{Class, Object, Sel, BOOL};

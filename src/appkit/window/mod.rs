@@ -8,7 +8,7 @@
 //! not bother providing access to them. If you require functionality like that, you're free to use
 //! the `objc` field on a `Window` to instrument it with the Objective-C runtime on your own.
 
-use block::ConcreteBlock;
+use block2::ConcreteBlock;
 
 use core_graphics::base::CGFloat;
 use core_graphics::geometry::{CGRect, CGSize};

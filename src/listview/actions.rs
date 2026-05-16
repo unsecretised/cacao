@@ -2,7 +2,7 @@ use objc::rc::{Id, Owned};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use block::ConcreteBlock;
+use block2::ConcreteBlock;
 
 use crate::color::Color;
 use crate::foundation::{NSString, NSUInteger, id};

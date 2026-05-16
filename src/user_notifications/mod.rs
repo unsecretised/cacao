@@ -4,7 +4,7 @@
 //! To use this module, you must specify the `user-notifications` feature flag in your
 //! `Cargo.toml`.
 
-use block::ConcreteBlock;
+use block2::ConcreteBlock;
 
 use objc::{class, msg_send, sel};
 use uuid::Uuid;

@@ -1,5 +1,5 @@
 use bitmask_enum::bitmask;
-use block::ConcreteBlock;
+use block2::ConcreteBlock;
 
 use objc::rc::{Id, Owned};
 use objc::runtime::Object;

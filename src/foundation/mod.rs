@@ -18,8 +18,8 @@
 #![allow(non_camel_case_types)]
 #![allow(non_upper_case_globals)]
 
-use objc::runtime;
-pub use objc::runtime::{BOOL, NO, YES};
+use objc2::runtime;
+pub use objc2::runtime::{BOOL, NO, YES};
 
 mod autoreleasepool;
 pub use autoreleasepool::AutoReleasePool;
@@ -67,24 +67,6 @@ pub fn to_bool(result: BOOL) -> bool {
 #[allow(non_camel_case_types)]
 pub type id = *mut runtime::Object;
 
-/// Exactly what it sounds like.
+/// Yup. Nil in rust 🔥🔥🔥
 #[allow(non_upper_case_globals)]
 pub const nil: id = 0 as id;
-
-/// Platform-specific.
-#[cfg(target_pointer_width = "32")]
-pub type NSInteger = libc::c_int;
-
-/// Platform-specific.
-#[cfg(target_pointer_width = "32")]
-pub type NSUInteger = libc::c_uint;
-
-/// Platform-specific.
-#[cfg(target_pointer_width = "64")]
-pub type NSInteger = libc::c_long;
-
-/// Platform-specific.
-#[cfg(target_pointer_width = "64")]
-pub type NSUInteger = libc::c_ulong;
-
-pub type NSPoint = core_graphics::geometry::CGPoint;

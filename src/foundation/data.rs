@@ -3,13 +3,13 @@ use std::ops::{Deref, DerefMut};
 use std::os::raw::c_void;
 use std::slice;
 
-use block::{Block, ConcreteBlock};
+use block2::{Block, ConcreteBlock};
 
-use objc::rc::{Id, Owned};
-use objc::runtime::Object;
-use objc::{class, msg_send, msg_send_id, sel};
+use objc2::rc::Retained;
+use objc2::runtime::Object;
+use objc2::{class, msg_send, msg_send_id, sel};
 
-use crate::foundation::{BOOL, NO, NSUInteger, YES, id, to_bool};
+use crate::foundation::{BOOL, NO, YES, id, to_bool};
 
 /// Wrapper for a retained `NSData` object.
 ///
@@ -18,7 +18,7 @@ use crate::foundation::{BOOL, NO, NSUInteger, YES, id, to_bool};
 ///
 /// This is an intentionally limited API.
 #[derive(Debug)]
-pub struct NSData(pub Id<Object, Owned>);
+pub struct NSData(pub Retained<Owned>);
 
 impl NSData {
     /// Given a vector of bytes, creates, retains, and returns a wrapped `NSData`.

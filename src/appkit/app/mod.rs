@@ -190,7 +190,7 @@ where
     /// Dispatches a message by grabbing the `sharedApplication`, getting ahold of the delegate,
     /// and passing back through there.
     pub fn dispatch_main(message: M) {
-        let queue = dispatch::Queue::main();
+        let queue = dispatch2::Queue::main();
 
         queue.exec_async(move || unsafe {
             let app: id = msg_send![register_app_class(), sharedApplication];
@@ -204,7 +204,7 @@ where
     /// Dispatches a message by grabbing the `sharedApplication`, getting ahold of the delegate,
     /// and passing back through there.
     pub fn dispatch_background(message: M) {
-        let queue = dispatch::Queue::main();
+        let queue = dispatch2::Queue::main();
 
         queue.exec_async(move || unsafe {
             let app: id = msg_send![register_app_class(), sharedApplication];

@@ -55,7 +55,7 @@ pub fn async_main_thread<F>(method: F)
 where
     F: Fn() + Send + 'static,
 {
-    let queue = dispatch::Queue::main();
+    let queue = dispatch2::Queue::main();
     queue.exec_async(method);
 }
 
@@ -64,7 +64,7 @@ pub fn sync_main_thread<F>(method: F)
 where
     F: Fn() + Send + 'static,
 {
-    let queue = dispatch::Queue::main();
+    let queue = dispatch2::Queue::main();
     queue.exec_sync(method);
 }
 

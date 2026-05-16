@@ -4,7 +4,7 @@ use objc::rc::{Id, Shared};
 use objc::runtime::Object;
 use objc::{class, msg_send, msg_send_id, sel};
 
-use block::ConcreteBlock;
+use block2::ConcreteBlock;
 
 use crate::error::Error;
 use crate::foundation::{NSUInteger, id, nil};

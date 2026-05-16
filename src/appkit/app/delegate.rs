@@ -4,7 +4,7 @@
 
 use std::ffi::c_void;
 
-use block::Block;
+use block2::Block;
 use objc::runtime::{Bool, Class, Object, Sel};
 use objc::{msg_send, sel};
 use url::Url;
