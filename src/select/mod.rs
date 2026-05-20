@@ -1,9 +1,9 @@
 //! Implements a Select-style dropdown. By default this uses NSPopupSelect on macOS.
 
-use core_graphics::geometry::CGRect;
-use objc::rc::{Id, Shared};
-use objc::runtime::{Class, Object};
-use objc::{msg_send, msg_send_id, sel};
+use objc2::rc::Retained;
+use objc2::runtime::{AnyClass, AnyObject};
+use objc2::{msg_send, msg_send_id, sel};
+use objc2_core_foundation::CGRect;
 
 use crate::control::Control;
 use crate::foundation::{NO, NSInteger, NSString, YES, id, load_or_register_class, nil};
@@ -140,9 +140,9 @@ impl Select {
     /// Really, this is not ideal.
     ///
     /// I cannot stress this enough.
-    pub fn set_action<F: Fn(*const Object) + Send + Sync + 'static>(&mut self, action: F) {
+    pub fn set_action<F: Fn(*const AnyObject) + Send + Sync + 'static>(&mut self, action: F) {
         // @TODO: This probably isn't ideal but gets the job done for now; needs revisiting.
-        let this: Id<Object, Shared> = self.objc.get(|obj| unsafe { msg_send_id![obj, self] });
+        let this: Retained<AnyObject> = self.objc.get(|obj| unsafe { msg_send_id![obj, self] });
         let handler = TargetActionHandler::new(&*this, action);
         self.handler = Some(handler);
     }
@@ -160,7 +160,7 @@ impl Select {
     /// Adds an item to the dropdown list.
     pub fn add_item(&self, title: &str) {
         self.objc.with_mut(|obj| unsafe {
-            let s = NSString::new(title);
+            let s = NSString::from_str(title);
             let _: () = msg_send![obj, addItemWithTitle: &*s];
         });
     }
@@ -207,7 +207,7 @@ impl ObjcAccess for Select {
         self.objc.with_mut(handler);
     }
 
-    fn get_from_backing_obj<F: Fn(&Object) -> R, R>(&self, handler: F) -> R {
+    fn get_from_backing_obj<F: Fn(&AnyObject) -> R, R>(&self, handler: F) -> R {
         self.objc.get(handler)
     }
 }
@@ -230,7 +230,7 @@ impl ObjcAccess for &Select {
         self.objc.with_mut(handler);
     }
 
-    fn get_from_backing_obj<F: Fn(&Object) -> R, R>(&self, handler: F) -> R {
+    fn get_from_backing_obj<F: Fn(&AnyObject) -> R, R>(&self, handler: F) -> R {
         self.objc.get(handler)
     }
 }
@@ -262,6 +262,6 @@ impl Drop for Select {
 
 /// Registers an `NSSelect` subclass, and configures it to hold some ivars
 /// for various things we need to store.
-fn register_class() -> &'static Class {
+fn register_class() -> &'static AnyClass {
     load_or_register_class("NSPopUpButton", "CacaoSelect", |_decl| {})
 }

@@ -1,3 +1,5 @@
+use objc2::rc::Retained;
+
 use crate::foundation::NSString;
 
 /// Constants for the standard system pasteboard names.
@@ -19,9 +21,9 @@ pub enum PasteboardName {
     Ruler,
 }
 
-impl From<PasteboardName> for NSString<'_> {
+impl From<PasteboardName> for Retained<NSString> {
     fn from(name: PasteboardName) -> Self {
-        NSString::new(match name {
+        NSString::from_str(match name {
             PasteboardName::Drag => "Apple CFPasteboard drag",
             PasteboardName::Find => "Apple CFPasteboard find",
             PasteboardName::Font => "Apple CFPasteboard font",
@@ -80,9 +82,9 @@ pub enum PasteboardType {
     TIFF,
 }
 
-impl From<PasteboardType> for NSString<'_> {
+impl From<PasteboardType> for Retained<NSString> {
     fn from(pboard_type: PasteboardType) -> Self {
-        NSString::new(match pboard_type {
+        NSString::from_str(match pboard_type {
             PasteboardType::URL => "public.url",
             PasteboardType::Color => "com.apple.cocoa.pasteboard.color",
             PasteboardType::FileURL => "public.file-url",

@@ -1,14 +1,13 @@
-use core_graphics::base::CGFloat;
-
-use objc::rc::{Id, Shared};
-use objc::runtime::{Class, Object};
-use objc::{msg_send, msg_send_id, sel};
+use objc2::rc::Retained;
+use objc2::runtime::{AnyObject, Class, Object};
+use objc2::{msg_send, msg_send_id, sel};
+use objc2_core_foundation::CGFloat;
 
 use crate::foundation::id;
 
 /// A wrapper for an animation proxy object in Cocoa that supports basic animations.
 #[derive(Clone, Debug)]
-pub struct ViewAnimatorProxy(pub Id<Object, Shared>);
+pub struct ViewAnimatorProxy(pub Retained<AnyObject>);
 
 impl ViewAnimatorProxy {
     pub fn new(proxy: id) -> Self {

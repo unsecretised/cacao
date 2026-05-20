@@ -1,3 +1,5 @@
+use objc2::rc::Retained;
+
 #[allow(non_camel_case_types)]
 use crate::foundation::NSString;
 
@@ -1313,7 +1315,7 @@ pub enum NotificationName {
     WKAccessibilityReduceMotionStatusDidChange,
 }
 
-impl From<NotificationName> for NSString<'_> {
+impl From<NotificationName> for Retained<NSString> {
     fn from(name: NotificationName) -> Self {
         match name {
             _ => NSString::no_copy(""),

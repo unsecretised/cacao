@@ -38,30 +38,14 @@ mod dictionary;
 pub use dictionary::NSMutableDictionary;
 
 mod number;
-pub use number::NSNumber;
+pub use crate::foundation::number::NSNumber;
+pub use objc2_foundation::{NSInteger, NSUInteger};
 
-mod string;
-pub use string::NSString;
+pub use objc2_foundation::NSString;
 
 // Separate named module to not conflict with the `url` crate. Go figure.
 mod urls;
 pub use urls::{NSURL, NSURLBookmarkCreationOption, NSURLBookmarkResolutionOption};
-
-/// Bool mapping types differ between ARM and x64. There's a number of places that we need to check
-/// against BOOL results throughout the framework, and this just simplifies some mismatches.
-#[inline(always)]
-pub fn to_bool(result: BOOL) -> bool {
-    match result {
-        YES => true,
-        NO => false,
-
-        //#[cfg(target_arch = "aarch64")]
-        #[cfg(not(target_arch = "aarch64"))]
-        _ => {
-            std::unreachable!();
-        }
-    }
-}
 
 /// More or less maps over to Objective-C's `id` type, which... can really be anything.
 #[allow(non_camel_case_types)]

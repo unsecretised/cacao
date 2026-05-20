@@ -44,12 +44,9 @@
 
 use std::collections::HashMap;
 
-use core_foundation::base::TCFType;
-
-use core_graphics::base::CGFloat;
-use objc::rc::{Id, Owned, Shared};
-use objc::runtime::{Class, Object};
-use objc::{class, msg_send, msg_send_id, sel};
+use objc2::rc::{Retained};
+use objc2::runtime::{AnyClass, AnyObject};
+use objc2::{class, msg_send, msg_send_id, sel};
 
 use crate::color::Color;
 use crate::foundation::{NO, NSArray, NSInteger, NSString, NSUInteger, YES, id, nil};
@@ -100,7 +97,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 /// A helper method for instantiating view classes and applying default settings to them.
-fn common_init(class: &Class) -> id {
+fn common_init(class: &AnyClass) -> id {
     unsafe {
         // Note: we do *not* enable AutoLayout here as we're by default placing this in a scroll
         // view, and we want it to just do its thing.
@@ -422,7 +419,7 @@ impl<T> ListView<T> {
     pub fn dequeue<R: ViewDelegate + 'static>(&self, identifier: &'static str) -> ListViewRow<R> {
         #[cfg(feature = "appkit")]
         {
-            let key = NSString::new(identifier);
+            let key = NSString::from_str(identifier);
             let cell: id = self
                 .objc
                 .get(|obj| unsafe { msg_send![obj, makeViewWithIdentifier:&*key owner:nil] });
@@ -487,7 +484,7 @@ impl<T> ListView<T> {
     /// Select the rows at the specified indexes, optionally adding to any existing selections.
     pub fn select_row_indexes(&self, indexes: &[usize], extends_existing: bool) {
         unsafe {
-            let mut index_set: Id<Object, Owned> = msg_send_id![class!(NSMutableIndexSet), new];
+            let mut index_set: Retained<AnyObject> = msg_send_id![class!(NSMutableIndexSet), new];
 
             for index in indexes {
                 let _: () = msg_send![&mut index_set, addIndex: index];
@@ -526,7 +523,7 @@ impl<T> ListView<T> {
     ///
     /// To be ultra-clear: the hack is that we don't `borrow_mut` before sending a message. It just
     /// feels dirty, hence the novel. ;P
-    fn hack_avoid_dequeue_loop<F: Fn(&Object)>(&self, handler: F) {
+    fn hack_avoid_dequeue_loop<F: Fn(&AnyObject)>(&self, handler: F) {
         self.objc.get(handler);
     }
 
@@ -570,7 +567,7 @@ impl<T> ListView<T> {
     pub fn insert_rows(&self, indexes: &[usize], animation: RowAnimation) {
         #[cfg(feature = "appkit")]
         unsafe {
-            let mut index_set: Id<Object, Owned> = msg_send_id![class!(NSMutableIndexSet), new];
+            let mut index_set: Retained<AnyObject> = msg_send_id![class!(NSMutableIndexSet), new];
 
             for index in indexes {
                 let x: NSUInteger = *index as NSUInteger;
@@ -581,7 +578,7 @@ impl<T> ListView<T> {
 
             // We need to temporarily retain this; it can drop after the underlying NSTableView
             // has also retained it.
-            let index_set: Id<Object, Shared> = index_set.into();
+            let index_set: Retained<AnyObject> = index_set.into();
             let x = index_set.clone();
 
             // This is done for a very explicit reason; see the comments on the method itself for
@@ -597,17 +594,17 @@ impl<T> ListView<T> {
     pub fn reload_rows(&self, indexes: &[usize]) {
         #[cfg(feature = "appkit")]
         unsafe {
-            let mut index_set: Id<Object, Owned> = msg_send_id![class!(NSMutableIndexSet), new];
+            let mut index_set: Retained<AnyObject> = msg_send_id![class!(NSMutableIndexSet), new];
 
             for index in indexes {
                 let x: NSUInteger = *index as NSUInteger;
                 let _: () = msg_send![&mut index_set, addIndex: x];
             }
 
-            let index_set: Id<Object, Shared> = index_set.into();
+            let index_set: Retained<AnyObject> = index_set.into();
             let x = index_set.clone();
 
-            let y: Id<Object, Shared> = msg_send_id![class!(NSIndexSet), indexSetWithIndex:0];
+            let y: Retained<AnyObject> = msg_send_id![class!(NSIndexSet), indexSetWithIndex:0];
 
             // Must use `get` to avoid a double lock.
             self.objc.get(|obj| {
@@ -624,7 +621,7 @@ impl<T> ListView<T> {
     pub fn remove_rows(&self, indexes: &[usize], animations: RowAnimation) {
         #[cfg(feature = "appkit")]
         unsafe {
-            let mut index_set: Id<Object, Owned> = msg_send_id![class!(NSMutableIndexSet), new];
+            let mut index_set: Retained<AnyObject> = msg_send_id![class!(NSMutableIndexSet), new];
 
             for index in indexes {
                 let x: NSUInteger = *index as NSUInteger;
@@ -635,7 +632,7 @@ impl<T> ListView<T> {
 
             // We need to temporarily retain this; it can drop after the underlying NSTableView
             // has also retained it.
-            let index_set: Id<Object, Shared> = index_set.into();
+            let index_set: Retained<AnyObject> = index_set.into();
             let x = index_set.clone();
 
             self.objc.with_mut(|obj| {

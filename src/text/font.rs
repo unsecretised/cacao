@@ -2,11 +2,10 @@
 
 use std::ops::Deref;
 
-use core_graphics::base::CGFloat;
-
-use objc::rc::{Id, Shared};
-use objc::runtime::{Class, Object};
-use objc::{class, msg_send, msg_send_id, sel};
+use objc2::rc::Retained;
+use objc2::runtime::{AnyClass, AnyObject};
+use objc2::{class, msg_send, msg_send_id, sel};
+use objc2_core_foundation::CGFloat;
 
 use crate::foundation::{NO, NSArray, NSString, YES, id, nil};
 use crate::utils::os;
@@ -14,7 +13,7 @@ use crate::utils::os;
 /// A `Font` can be constructed and applied to supported controls to control things like text
 /// appearance and size.
 #[derive(Clone, Debug)]
-pub struct Font(pub Id<Object, Shared>);
+pub struct Font(pub Retained<AnyObject>);
 
 impl Default for Font {
     /// Returns the default `labelFont` on macOS.
@@ -32,7 +31,7 @@ impl Default for Font {
 }
 
 impl Font {
-    fn class() -> &'static Class {
+    fn class() -> &'static AnyClass {
         #[cfg(feature = "appkit")]
         let class = class!(NSFont);
         #[cfg(all(feature = "uikit", not(feature = "appkit")))]
@@ -56,7 +55,7 @@ impl Font {
 
     /// Creates and returns a font for the specified font name and size.
     pub fn with_name(name: &str, size: f64) -> Self {
-        let font_name = NSString::new(name);
+        let font_name = NSString::from_str(name);
         Font(unsafe { msg_send_id![Self::class(), fontWithName: &*font_name, size: size] })
     }
 
@@ -83,10 +82,10 @@ impl Font {
 }
 
 impl Deref for Font {
-    type Target = Object;
+    type Target = AnyObject;
 
     /// Derefs to the underlying Objective-C Object.
-    fn deref(&self) -> &Object {
+    fn deref(&self) -> &AnyObject {
         &*self.0
     }
 }

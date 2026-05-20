@@ -1,6 +1,6 @@
-use objc::rc::{Id, Shared};
-use objc::runtime::Object;
-use objc::{class, msg_send, msg_send_id, sel};
+use objc2::rc::Retained;
+use objc2::runtime::AnyObject;
+use objc2::{class, msg_send, msg_send_id, sel};
 
 use crate::appkit::toolbar::ToolbarItem;
 use crate::foundation::{NSString, id, nil};
@@ -16,7 +16,7 @@ use crate::view::{View, ViewController, ViewDelegate};
 #[derive(Debug)]
 pub struct SplitViewItem<T> {
     /// The underlying Objective-C Object.
-    pub objc: Id<Object, Shared>,
+    pub objc: Retained<AnyObject>,
 
     /// The wrapped ViewController.
     pub view_controller: ViewController<T>,
@@ -112,7 +112,7 @@ where
 #[derive(Debug)]
 pub struct SplitViewController<Sidebar, Content, Details> {
     /// A reference to the underlying Objective-C split view controller.
-    pub objc: Id<Object, Shared>,
+    pub objc: Retained<AnyObject>,
 
     /// A reference to the sidebar `SplitViewItem`.
     pub sidebar: SplitViewItem<Sidebar>,
@@ -176,7 +176,7 @@ impl<Sidebar, Content, Details> SplitViewController<Sidebar, Content, Details> {
     /// Setting this name causes the system to persist separator locations to a defaults database,
     /// and the position(s) will be restored upon the user reopening the application.
     pub fn set_autosave_name(&self, name: &str) {
-        let name = NSString::new(name);
+        let name = NSString::from_str(name);
 
         unsafe {
             let split_view: id = msg_send![&*self.objc, splitView];
@@ -186,7 +186,7 @@ impl<Sidebar, Content, Details> SplitViewController<Sidebar, Content, Details> {
 }
 
 impl<Sidebar, Content, Details> Controller for SplitViewController<Sidebar, Content, Details> {
-    fn get_backing_node(&self) -> Id<Object, Shared> {
+    fn get_backing_node(&self) -> Retained<AnyObject> {
         self.objc.clone()
     }
 }

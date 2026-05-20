@@ -42,8 +42,8 @@
 //!
 //! For more information on Autolayout, view the module or check out the examples folder.
 
-use objc::runtime::{Class, Object};
-use objc::{msg_send, msg_send_id, sel};
+use objc2::runtime::AnyObject;
+use objc2::{msg_send, msg_send_id, sel};
 
 use crate::color::Color;
 use crate::foundation::{NO, NSArray, NSInteger, NSString, YES, id, nil};
@@ -354,7 +354,7 @@ impl<T> ObjcAccess for View<T> {
         self.objc.with_mut(handler);
     }
 
-    fn get_from_backing_obj<F: Fn(&Object) -> R, R>(&self, handler: F) -> R {
+    fn get_from_backing_obj<F: Fn(&AnyObject) -> R, R>(&self, handler: F) -> R {
         self.objc.get(handler)
     }
 }

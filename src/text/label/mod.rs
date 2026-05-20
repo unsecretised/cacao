@@ -43,11 +43,9 @@
 //!
 //! For more information on Autolayout, view the module or check out the examples folder.
 
-use core_foundation::base::TCFType;
-
-use objc::rc::{Id, Shared};
-use objc::runtime::{Class, Object};
-use objc::{msg_send, msg_send_id, sel};
+use objc2::rc::Retained;
+use objc2::runtime::{AnyClass, AnyObject};
+use objc2::{msg_send, msg_send_id, sel};
 
 use crate::color::Color;
 use crate::foundation::{NO, NSArray, NSInteger, NSString, NSUInteger, YES, id, nil};
@@ -78,7 +76,7 @@ pub use traits::LabelDelegate;
 pub(crate) static LABEL_DELEGATE_PTR: &str = "rstLabelDelegatePtr";
 
 /// A helper method for instantiating view classes and applying default settings to them.
-fn allocate_view(registration_fn: fn() -> &'static Class) -> id {
+fn allocate_view(registration_fn: fn() -> &'static AnyClass) -> id {
     unsafe {
         #[cfg(feature = "appkit")]
         let view: id = {
@@ -344,7 +342,7 @@ impl<T> Label<T> {
     /// Call this to set the text for the label.
     pub fn set_text<S: AsRef<str>>(&self, text: S) {
         let text = text.as_ref();
-        let s = NSString::new(text);
+        let s = NSString::from_str(text);
 
         self.objc.with_mut(|obj| unsafe {
             #[cfg(feature = "appkit")]
@@ -367,8 +365,10 @@ impl<T> Label<T> {
     /// Retrieve the text currently held in the label.
     #[cfg(feature = "appkit")]
     pub fn get_text(&self) -> String {
-        self.objc
-            .get(|obj| unsafe { NSString::retain(msg_send![obj, stringValue]).to_string() })
+        self.objc.get(|obj| unsafe {
+            use objc2::Message;
+            NSString::retain(msg_send![obj, stringValue]).to_string()
+        })
     }
     #[cfg(all(feature = "uikit", not(feature = "appkit")))]
     pub fn get_text(&self) -> String {
@@ -443,7 +443,7 @@ impl<T> ObjcAccess for Label<T> {
         self.objc.with_mut(handler);
     }
 
-    fn get_from_backing_obj<F: Fn(&Object) -> R, R>(&self, handler: F) -> R {
+    fn get_from_backing_obj<F: Fn(&AnyObject) -> R, R>(&self, handler: F) -> R {
         self.objc.get(handler)
     }
 }

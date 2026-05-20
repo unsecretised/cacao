@@ -92,10 +92,10 @@
 //!
 //! [cargo-features]: https://doc.rust-lang.org/stable/cargo/reference/manifest.html#the-features-section
 
-pub use core_foundation;
-pub use core_graphics;
+pub use objc2_core_foundation;
+pub use objc2_core_graphics;
 pub use lazy_static;
-pub use objc;
+pub use objc2;
 pub use url;
 
 //#[cfg(all(feature = "appkit", feature = "uikit", not(feature = "doc_cfg")))]

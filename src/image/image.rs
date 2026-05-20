@@ -1,15 +1,12 @@
-use objc::rc::{Id, Shared};
-use objc::runtime::{Bool, Class, Object};
+use objc2::rc::Retained;
+use objc2::runtime::{AnyObject, Bool, Class, Object};
 
-use objc::{class, msg_send, msg_send_id, sel};
+use objc2::{class, msg_send, msg_send_id, sel};
 
 use block2::ConcreteBlock;
-
-use core_graphics::context::{CGContext, CGContextRef};
-use core_graphics::{
-    base::CGFloat,
-    geometry::{CGPoint, CGRect, CGSize},
-};
+use objc2_core_foundation::{CGFloat, CGRect, CGSize};
+#[cfg(feature = "appkit")]
+use objc2_core_graphics::CGContext;
 
 use super::icons::*;
 use crate::foundation::{NSData, NSString, NSURL, id};
@@ -123,7 +120,7 @@ pub struct DrawConfig {
 /// Wraps `NSImage` under AppKit, and `UIImage` on under UIKit (iOS and tvOS). Can be used to display images, icons,
 /// and so on.
 #[derive(Clone, Debug)]
-pub struct Image(pub Id<Object, Shared>);
+pub struct Image(pub Retained<AnyObject>);
 
 impl Image {
     fn class() -> &'static Class {
@@ -137,12 +134,12 @@ impl Image {
 
     /// Wraps a system-returned image, e.g from QuickLook previews.
     pub fn with(image: id) -> Self {
-        Image(unsafe { Id::retain(image).unwrap() })
+        Image(unsafe { Retained::retain(image).unwrap() })
     }
 
     /// Loads an image from the specified path.
     pub fn with_contents_of_file(path: &str) -> Self {
-        let file_path = NSString::new(path);
+        let file_path = NSString::from_str(path);
 
         Image(unsafe {
             let alloc = msg_send_id![Self::class(), alloc];
@@ -196,8 +193,8 @@ impl Image {
         Image(unsafe {
             match os::is_minimum_version(11) {
                 true => {
-                    let icon = NSString::new(icon.to_sfsymbol_str());
-                    let desc = NSString::new(accessibility_description);
+                    let icon = NSString::from_str(icon.to_sfsymbol_str());
+                    let desc = NSString::from_str(accessibility_description);
                     msg_send_id![
                         Self::class(),
                         imageWithSystemSymbolName: &*icon,
@@ -233,8 +230,8 @@ impl Image {
         Image(unsafe {
             match os::is_minimum_version(min_version) {
                 true => {
-                    let icon = NSString::new(symbol.to_str());
-                    let desc = NSString::new(accessibility_description);
+                    let icon = NSString::from_str(symbol.to_str());
+                    let desc = NSString::from_str(accessibility_description);
                     msg_send_id![
                         Self::class(),
                         imageWithSystemSymbolName:&*icon,
@@ -260,24 +257,27 @@ impl Image {
     #[cfg(feature = "appkit")]
     pub fn draw<F>(config: DrawConfig, handler: F) -> Self
     where
-        F: Fn(CGRect, &CGContextRef) -> bool + 'static,
+        F: Fn(CGRect, &CGContext) -> bool + 'static,
     {
+        use objc2_core_foundation::CGPoint;
+
         let source_frame = CGRect::new(
-            &CGPoint::new(0., 0.),
-            &CGSize::new(config.source.0, config.source.1),
+            CGPoint::new(0., 0.),
+            CGSize::new(config.source.0, config.source.1),
         );
 
         let target_frame = CGRect::new(
-            &CGPoint::new(0., 0.),
-            &CGSize::new(config.target.0, config.target.1),
+            CGPoint::new(0., 0.),
+            CGSize::new(config.target.0, config.target.1),
         );
 
         let resized_frame = config.resize.apply(source_frame, target_frame);
 
         let block = ConcreteBlock::new(move |_destination: CGRect| unsafe {
+            use objc2_core_graphics::CGContext;
+
             let current_context: id = msg_send![class!(NSGraphicsContext), currentContext];
-            let context_ptr: core_graphics::sys::CGContextRef =
-                msg_send![current_context, CGContext];
+            let context_ptr: CGContext = msg_send![current_context, CGContext];
             let context = CGContext::from_existing_context_ptr(context_ptr);
             let _: () = msg_send![class!(NSGraphicsContext), saveGraphicsState];
 

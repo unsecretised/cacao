@@ -1,6 +1,6 @@
 //! Wrapper methods for various geometry types (rects, sizes, ec).
 
-use core_graphics::geometry::{CGPoint, CGRect, CGSize};
+use objc2_core_foundation::{CGPoint, CGRect, CGSize};
 
 /// A struct that represents a box - top, left, width and height. You might use this for, say,
 /// setting the initial frame of a view.
@@ -52,8 +52,8 @@ pub enum Edge {
 impl From<Rect> for CGRect {
     fn from(rect: Rect) -> CGRect {
         CGRect::new(
-            &CGPoint::new(rect.left, rect.top),
-            &CGSize::new(rect.width, rect.height),
+            CGPoint::new(rect.left, rect.top),
+            CGSize::new(rect.width, rect.height),
         )
     }
 }

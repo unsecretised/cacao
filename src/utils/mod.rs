@@ -2,14 +2,12 @@
 //! belong to. These are typically internal, and if you rely on them... well, don't be surprised if
 //! they go away one day.
 
-use core_foundation::base::CFIndex;
-use core_graphics::base::CGFloat;
+use objc2::{class, msg_send, sel};
 
-use objc::{class, msg_send, sel};
-
-use objc::rc::{Id, Shared};
-use objc::runtime::Object;
-use objc::{Encode, Encoding};
+use objc2::rc::Retained;
+use objc2::runtime::AnyObject;
+use objc2::{Encode, Encoding};
+use objc2_core_foundation::{CFIndex, CGFloat};
 
 use crate::foundation::{BOOL, NO, YES, id};
 
@@ -23,7 +21,7 @@ pub mod properties;
 /// a guard for whether something is a (View|Window|etc)Controller.
 pub trait Controller {
     /// Returns the underlying Objective-C object.
-    fn get_backing_node(&self) -> Id<Object, Shared>;
+    fn get_backing_node(&self) -> Retained<AnyObject>;
 }
 
 /// Utility method for taking a pointer and grabbing the corresponding delegate in Rust. This is
@@ -42,7 +40,7 @@ pub trait Controller {
 ///
 /// This is, like much in this framework, subject to revision pending more thorough testing and
 /// checking.
-pub fn load<'a, T>(this: &'a Object, ptr_name: &str) -> &'a T {
+pub fn load<'a, T>(this: &'a AnyObject, ptr_name: &str) -> &'a T {
     unsafe {
         let ptr: usize = *this.get_ivar(ptr_name);
         let obj = ptr as *const T;

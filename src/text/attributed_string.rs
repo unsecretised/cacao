@@ -3,12 +3,12 @@ use std::ops::{Deref, DerefMut, Range};
 use std::os::raw::c_char;
 use std::{fmt, slice, str};
 
-use objc::rc::{Id, Owned};
-use objc::runtime::Object;
-use objc::{class, msg_send, msg_send_id, sel};
+use objc2::rc::Retained;
+use objc2::runtime::AnyObject;
+use objc2::{class, msg_send, msg_send_id, sel};
 
 use crate::color::Color;
-use crate::foundation::{BOOL, NO, NSString, YES, id, to_bool};
+use crate::foundation::{BOOL, NO, NSString, YES, id};
 use crate::utils::CFRange;
 
 use super::Font;
@@ -21,7 +21,7 @@ unsafe extern "C" {
 /// A wrapper around `NSMutableAttributedString`, which can be used for more complex text
 /// rendering.
 ///
-pub struct AttributedString(pub Id<Object, Owned>);
+pub struct AttributedString(pub Retained<AnyObject>);
 
 impl AttributedString {
     /// Creates a blank AttributedString. Internally, this allocates an
@@ -74,9 +74,9 @@ impl AttributedString {
 
 impl fmt::Display for AttributedString {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let string = NSString::from_id(unsafe { msg_send_id![&*self.0, string] });
+        let string = NSString::from(unsafe { msg_send_id![&*self.0, string] });
 
-        write!(f, "{}", string.to_str())
+        write!(f, "{}", string.to_string())
     }
 }
 
@@ -91,17 +91,17 @@ impl fmt::Debug for AttributedString {
 }
 
 impl Deref for AttributedString {
-    type Target = Object;
+    type Target = AnyObject;
 
     /// Derefs to the underlying Objective-C Object.
-    fn deref(&self) -> &Object {
+    fn deref(&self) -> &AnyObject {
         &*self.0
     }
 }
 
 impl DerefMut for AttributedString {
     /// Derefs to the underlying Objective-C Object.
-    fn deref_mut(&mut self) -> &mut Object {
+    fn deref_mut(&mut self) -> &mut AnyObject {
         &mut *self.0
     }
 }
